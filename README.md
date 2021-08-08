@@ -1,2 +1,3 @@
 # NN_from_scratch
- A neural network framework in .py and .ipynb
+ A hand-coded neural network files collection in .py and .ipynb
+ Inspired by GeoHotz

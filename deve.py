@@ -32,7 +32,7 @@ batch_size = 2
 Bob = model(x_train[0:batch_size].reshape((-1, 28*28)).shape)
 tt = forward(x_train[0:batch_size].reshape(
     (-1, 28*28)), y_train[0:batch_size], Bob)
-print("forward: \n", tt)
+print("forward: \n", tt[0].argmax(), ", ", tt[1].argmax())
 
 
 def backward(input, output, layers):

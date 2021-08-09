@@ -1,72 +1,44 @@
-from frame import layer_init, Dense
 import numpy as np
 from fetch_it import mnist
+from frame import layer_init, Dense, Relu
+from utils import model, forward, backward, sgd
+import matplotlib.pyplot as plt
+from tqdm import tqdm
 
 x_train, y_train, x_test, y_test = mnist()
 
 assert x_train.shape[0] == 6e4
 """move succeed building blocks to 'frame'"""
 
+batch_size = 32
 
-def model(input_shape):
-    """
-    input_layer = x.reshape((-1, 28*28))  # flatten layer
-    add shape control to deal with batched data: np.expand_dims -> np.reshape
-    """
-    layer1 = Dense(input_shape, 128)  # (784,128)
-    layer2 = Dense(layer1.shape, 10)  # (128,10)
-    return [layer1, layer2]
+losses = []
+m_shape = x_train[0:batch_size].reshape((-1, 28*28)).shape
+Bob = model(m_shape)
+for i in tqdm(range(1000)):
+    # forward
+    tt, fpass = forward(x_train[i:i+batch_size].reshape((-1, 28*28)), Bob)
+    # backprop
+    loss, layers, d_layers = backward(y_train[i:i+batch_size], tt, Bob, fpass)
 
+    layers_new = sgd(layers, d_layers)
+    ll1, ll2 = layers_new[0], layers_new[1]
 
-def forward(x, layers):
-    """
-    for evaluate and if you want forward only
-    y is for evaluation so we don't need it here
-    """
-    output = x@layers[0]
-    for i in range(1, len(layers)):
-        output = output@layers[i]
+    Bob = [ll1, ll2]
+    assert ll1.shape == (784, 128)
+    assert ll2.shape == (128, 10)
 
-    assert output.shape == (x.shape[0], 10)
-    return output
+    losses.append(loss)
 
 
-batch_size = 2
+plt.plot(losses)
+plt.show()
+plt.title("training loss")
+print(losses[-1])
+accus = []
+for i in tqdm(range(100)):
+    pred, _ = forward(x_test[i:i+batch_size].reshape((-1, 28*28)), Bob)
+    accus.append(
+        (pred.argmax() == y_test[i:i+batch_size]).astype(np.float32).sum())
 
-Bob = model(x_train[0:batch_size].reshape((-1, 28*28)).shape)
-tt = forward(x_train[0:batch_size].reshape(
-    (-1, 28*28)), Bob)
-print("forward: ", tt[0].argmax(), ", ", tt[1].argmax())
-
-
-def sgd(layers, lr=1e-3):
-    layers = layers[1] - lr*layers[0]
-
-
-def CE(y, yhat):
-    """crossentropy loss"""
-    out = np.zeros((len(y), 10), dtype=np.float32)
-    out[range(len(y)), y] = 1  # encoding label
-    assert out.shape == yhat.shape
-    losce = yhat - np.log(np.exp(yhat).sum(axis=1))  # ()
-    loss = -out*losce.mean(axis=1)  # (bs,) almost a scalar
-    grads = -out/len(y) + np.exp(-losce)*out.mean(axis=1)
-    return loss, grads
-
-
-def backward(y, yhat, layers, loss_fn=CE, optimizer=sgd):
-    # return loss and gradient
-    loss, grads = loss_fn(y, yhat)
-
-    # backprop the grads to layers
-    """
-    concatenate d_layers into layers:
-
-    layers->list(layers)->layers.append(d_layers[i])
-    -> np.array(layers)->layers.reshape((2,num_of_layers))
-    """
-    # weight update
-    optimizer(layers)
-
-    # return weight
-    return loss.mean(), layers
+print("%.3f" % (sum(accus)/len(accus)))

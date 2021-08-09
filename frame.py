@@ -22,3 +22,7 @@ layer type: list(output, grad)
 def Dense(input_shape, units):
     _, w = input_shape
     return layer_init(w, units)
+
+
+def Relu(x):
+    return np.maximum(x, 0)

@@ -23,7 +23,7 @@ def build_model(input_shape):
 
 
 """
-functional api
+functional api: from keras doc
 
 inputs = tf.keras.Input(shape=(3,))
 x = tf.keras.layers.Dense(4, activation=tf.nn.relu)(inputs)
@@ -50,7 +50,7 @@ class MyModel(tf.keras.Model):
 model = MyModel() # build it
 
 
-low-level training
+low-level training: from mit introtodeeplearning
 
 for idx in tqdm(range(0, train_images.shape[0], batch_size)):
 

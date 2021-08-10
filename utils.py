@@ -72,4 +72,5 @@ def backward(y, yhat, layers, fpass, loss_fn=CE):
 
 
 def sgd(layers, d_layers, lr=1e-3):
+    """how to cast without being deprecated"""
     return np.array(layers) - lr*np.array(d_layers[::-1])

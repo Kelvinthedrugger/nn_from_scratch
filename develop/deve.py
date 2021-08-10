@@ -58,7 +58,7 @@ def training(x, y, model, loss_fn, optimizer=SGD, batch_size=32, epoch=1000):
 
         losses.append(loss)
     end = time()
-    print("time spend %.4f sec" % (end-start))
+    print("time: %.4f sec" % (end-start))
     print("loss: %.3f" % min(losses))
     plt.plot(losses)
     plt.title("with relu")
@@ -72,20 +72,19 @@ optimizer = SGD
 batch_size = 32
 
 weights = training(x_train, y_train, model, loss_fn,
-                   optimizer, batch_size, epoch=1000)
+                   optimizer, batch_size, epoch=300)
 
 # testing
-batch_size = 1
+batch_size = 32
 accus = []
-for i in range(1000):
+for i in range(300):
     output, _ = model(x_test[i:i+batch_size], weights, relu)
     pred = output[-1]
     accus.append(
-        (pred.argmax() == y_test[i:i+batch_size]).astype(np.float32).sum())
+        (pred.argmax(axis=1) == y_test[i:i+batch_size]).astype(np.float32).mean())
 
 print("test accuracy: %.3f" % (sum(accus)/len(accus)))
-# the way to perform prediction is buggy, problematic for batch_size > 1
-plt.plot([sum(accus[:i+batch_size])/len(accus[:i+batch_size])
-         for i in range(1000)])
+
+plt.plot(accus)
 plt.legend(["training loss", "test accuracy"])
 plt.show()

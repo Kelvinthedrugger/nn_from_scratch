@@ -10,6 +10,11 @@ def layer_init(h, w, batch_size=None):
 """activation"""
 
 
+def act_df(x):
+    # defalut activation function
+    return x
+
+
 def relu(x):
     return np.maximum(x, 0)
 

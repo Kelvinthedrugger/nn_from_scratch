@@ -42,31 +42,50 @@ def backward(grad, weights, fpass):
 
 def training(x, y, model, loss_fn, optimizer=SGD, batch_size=32, epoch=1000):
     losses = []
-    _, layers = model(x[batch_size])  # to establish 'layers'
+    _, layers = model(x[0])  # to establish 'layers'
     start = time()
     for _ in range(epoch):
         samp = np.random.randint(0, x.shape[0]-batch_size, size=(batch_size))
         X, Y = x[samp], y[samp]
-        fpass, weights = model(X, layers)
+        fpass, weights = model(X, layers, relu)
         prediction = fpass[-1]
         loss, grad = loss_fn(Y, prediction)
 
         # target: automate [update_weight] -> updated model
         gradient = backward(grad, weights, fpass)
-        update_weight = optimizer(gradient, weights, 1e-3)
+        update_weight = optimizer(gradient, weights, 1e-4)
         layers = update_weight
 
         losses.append(loss)
     end = time()
-    print("time spend %.4f" % (end-start))
+    print("time spend %.4f sec" % (end-start))
     print("loss: %.3f" % min(losses))
     plt.plot(losses)
     plt.title("with relu")
-    plt.show()
+    # plt.show()
+    return layers
 
 
 model = BobNet
 loss_fn = CE
 optimizer = SGD
+batch_size = 32
 
-training(x_train, y_train, model, loss_fn, optimizer, epoch=300)
+weights = training(x_train, y_train, model, loss_fn,
+                   optimizer, batch_size, epoch=1000)
+
+# testing
+batch_size = 1
+accus = []
+for i in range(1000):
+    output, _ = model(x_test[i:i+batch_size], weights, relu)
+    pred = output[-1]
+    accus.append(
+        (pred.argmax() == y_test[i:i+batch_size]).astype(np.float32).sum())
+
+print("test accuracy: %.3f" % (sum(accus)/len(accus)))
+# the way to perform prediction is buggy, problematic for batch_size > 1
+plt.plot([sum(accus[:i+batch_size])/len(accus[:i+batch_size])
+         for i in range(1000)])
+plt.legend(["training loss", "test accuracy"])
+plt.show()

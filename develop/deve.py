@@ -106,13 +106,13 @@ def backward(grad, weights, fpass):
     return gradient[::-1]
 
 
-def training(x, y, model, loss_fn, optimizer=SGD, epoch=1000):
+def training(x, y, model, loss_fn, optimizer=SGD, batch_size=32, epoch=1000):
     """the high level api"""
     losses = []
-    _, layers = model(x[0])  # to establish 'layers'
+    _, layers = model(x[batch_size])  # to establish 'layers'
     for _ in range(epoch):
-        samp = np.random.randint(0, x.shape[0]-1)
-        X, Y = x[samp:samp+1], y[samp:samp+1]
+        samp = np.random.randint(0, x.shape[0]-batch_size, size=(batch_size))
+        X, Y = x[samp], y[samp]
         fpass, weights = model(X, layers)
         prediction = fpass[-1]
         loss, grad = loss_fn(Y, prediction)
@@ -124,7 +124,6 @@ def training(x, y, model, loss_fn, optimizer=SGD, epoch=1000):
 
         losses.append(loss)
     print("loss: %.3f" % losses[-1])
-    print(losses[:5])
     plt.plot(losses)
     plt.title("without activation function")
     plt.show()

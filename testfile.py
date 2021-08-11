@@ -45,6 +45,6 @@ accus = []
 for i in range(100):
     pred, _ = forward(x_test[i:i+batch_size].reshape((-1, 28*28)), Bob)
     accus.append(
-        (pred.argmax() == y_test[i:i+batch_size]).astype(np.float32).sum())
+        (pred.argmax(axis=1) == y_test[i:i+batch_size]).astype(np.float32).mean())
 
 print("test accuracy: %.3f" % (sum(accus)/len(accus)))

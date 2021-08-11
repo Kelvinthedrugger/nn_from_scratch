@@ -40,7 +40,7 @@ def backward(grad, weights, fpass):
     return gradient[::-1]
 
 
-def training(x, y, model, loss_fn, optimizer=SGD, batch_size=32, epoch=1000, x_t=None, y_t=None, kernel_regularizer=None):
+def training(x, y, model, loss_fn, optimizer=SGD, batch_size=32, epoch=1000, x_t=None, y_t=None, kernel_regularizer=None, early_stops=False, patience=5):
     losses = []
     test_losses = []
     _, layers = model(x[0])  # to establish 'layers'
@@ -52,7 +52,7 @@ def training(x, y, model, loss_fn, optimizer=SGD, batch_size=32, epoch=1000, x_t
         prediction = fpass[-1]
         loss, grad = loss_fn(Y, prediction)
         if kernel_regularizer is not None:
-            grad = kernel_regularizer(grad, weights)
+            grad = kernel_regularizer(grad, weights, 5e-4)
 
         X_t, Y_t = x_t[samp*(samp < len(x_t))], y_t[samp*(samp < len(x_t))]
         fpt, _ = model(X_t, layers, relu)
@@ -66,10 +66,16 @@ def training(x, y, model, loss_fn, optimizer=SGD, batch_size=32, epoch=1000, x_t
 
         losses.append(loss)
         test_losses.append(loss_t)
+
+        if early_stops:
+            if losses.index(losses[-1]) - losses.index(min(losses)) > patience:
+                print("\nstops at epoch: %d" % losses.index(losses[-1]))
+                break
+
     end = time()
     print("time: %.4f sec" % (end-start))
-    print("loss: %.3f" % min(losses))
-    print("test loss: %.3f" % min(test_losses))
+    print("loss: %.3f" % (losses[-1]))
+    print("test loss: %.3f" % (test_losses[-1]))
     plt.plot(losses)
     plt.plot(test_losses)
     return layers
@@ -81,7 +87,7 @@ optimizer = SGD
 batch_size = 32
 
 weights = training(x_train, y_train, model, loss_fn,
-                   optimizer, batch_size, epoch=300, x_t=x_test, y_t=y_test, kernel_regularizer=kernel_L1)
+                   optimizer, batch_size, epoch=100, x_t=x_test, y_t=y_test, kernel_regularizer=kernel_L2, early_stops=True, patience=20)
 
 # testing
 batch_size = 32  # handy

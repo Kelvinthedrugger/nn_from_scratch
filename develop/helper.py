@@ -62,14 +62,14 @@ def SGD(grad, weight, lr=1e-5):
 """kernel regularizer"""
 
 
-def kernel_L1(grad, weights, ratio=1e-8):
+def kernel_L1(grad, weights, ratio=1e-4):
     for i in range(len(weights)):
         # penalize the loss
         grad -= ratio * weights[i].sum()
     return grad
 
 
-def kernel_L2(grad, weights, ratio=1e-8):
+def kernel_L2(grad, weights, ratio=1e-3):
     for i in range(len(weights)):
         # penalize the loss
         grad -= ratio * np.square(weights[i]).sum()

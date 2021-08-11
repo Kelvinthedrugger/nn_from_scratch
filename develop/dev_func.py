@@ -16,18 +16,36 @@ for ith unit in layer1:
 """
 
 
-def dropout(layer, nth_layer, prob=0.2):
-    pass
+def dropout(layer, nth_layer=0, prob=0.2, storage=None):
     # try to prevent stroage got cleaned if unwanted
     # idk how to append value w/ dict
-    storage = {}  # {ith, value}
+    if storage is None:  # first epoch in training
+        storage = {}  # {ith, value}
     # only one layer is assigned
     if isinstance(nth_layer, int):
-        pass
         for i in range(len(layer)):
             if layer[i].all() == 0.:
                 pass
                 "restore it using storage"
             if np.random.uniform() < prob:
+                # if not layer[i].all() == 0.:
                 storage[i] = layer[i]
+                print("\nindex: ", i, " should store: ", layer[i])
                 layer[i] *= 0.
+    return layer, storage
+
+
+testlayer = np.random.uniform(-10., 10., size=(5, 5))
+
+for i in range(5):  # training loop
+    print("\nepoch: %d" % (i+1))
+    print("\nbefore: \n\n", testlayer)
+    after_dropout, storage = dropout(
+        testlayer, storage=(None if i == 0 else storage))
+    print("\nafter: \n\n", after_dropout)
+    #print("\nstorage: \n\n", storage)
+    # if not storage == {}:
+    #     for j in range(5):  # it's gonna be slow asf
+    #         if testlayer[j][0] == 0.:
+    #             print(storage[j])  # indexing is problematic
+print(storage)

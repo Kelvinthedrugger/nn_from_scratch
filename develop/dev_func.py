@@ -36,22 +36,17 @@ for i in range(1):  # training loop
 print("\n\n", storage)"""
 
 
-def pas_val(x):
-    return x
-
-
-store = {}
+store = {}  # dict is essentially dixk
 testlayer = np.random.uniform(-10., 10., size=(5, 5)).astype(np.float32)
 if np.random.uniform() < 0.8:
     print(testlayer)
-    tmp = testlayer[0]  # assign here but didnt work
-    print(tmp)
-    tmp1 = pas_val(testlayer[0])
-    print(tmp1)
+    # assign here but didnt work
+    #tmp = list(testlayer[0])
     #store[0] = tmp
+    # print(tmp)
+    store[0] = np.array(list(testlayer[0]), dtype=np.float32)
     print("\nindex: ", 0, " should store: ", testlayer[0])
     testlayer[0] *= 0.
-    print(testlayer, type(testlayer[0, 0]))
-print(tmp)
-print(tmp1)
-print(store)
+    print(testlayer, type(testlayer[0]))
+    # print(tmp)
+print(store, type(store[0]))

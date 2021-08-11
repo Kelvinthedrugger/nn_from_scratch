@@ -1,7 +1,7 @@
 from time import time
 import matplotlib.pyplot as plt
 import numpy as np
-from helper import layer_init, CE, SGD, relu, act_df
+from helper import layer_init, CE, SGD, relu, act_df, kernel_L1, kernel_L2
 from fetch_it import mnist
 
 x_train, y_train, x_test, y_test = mnist()
@@ -40,7 +40,7 @@ def backward(grad, weights, fpass):
     return gradient[::-1]
 
 
-def training(x, y, model, loss_fn, optimizer=SGD, batch_size=32, epoch=1000, x_t=None, y_t=None):
+def training(x, y, model, loss_fn, optimizer=SGD, batch_size=32, epoch=1000, x_t=None, y_t=None, kernel_regularizer=None):
     losses = []
     test_losses = []
     _, layers = model(x[0])  # to establish 'layers'
@@ -51,6 +51,8 @@ def training(x, y, model, loss_fn, optimizer=SGD, batch_size=32, epoch=1000, x_t
         fpass, weights = model(X, layers, relu)
         prediction = fpass[-1]
         loss, grad = loss_fn(Y, prediction)
+        if kernel_regularizer is not None:
+            grad = kernel_regularizer(grad, weights)
 
         X_t, Y_t = x_t[samp*(samp < len(x_t))], y_t[samp*(samp < len(x_t))]
         fpt, _ = model(X_t, layers, relu)
@@ -79,10 +81,10 @@ optimizer = SGD
 batch_size = 32
 
 weights = training(x_train, y_train, model, loss_fn,
-                   optimizer, batch_size, epoch=300, x_t=x_test, y_t=y_test)
+                   optimizer, batch_size, epoch=300, x_t=x_test, y_t=y_test, kernel_regularizer=kernel_L1)
 
 # testing
-batch_size = 32
+batch_size = 32  # handy
 accus = []
 for i in range(300):
     output, _ = model(x_test[i:i+batch_size], weights, relu)

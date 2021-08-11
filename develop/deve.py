@@ -40,8 +40,9 @@ def backward(grad, weights, fpass):
     return gradient[::-1]
 
 
-def training(x, y, model, loss_fn, optimizer=SGD, batch_size=32, epoch=1000):
+def training(x, y, model, loss_fn, optimizer=SGD, batch_size=32, epoch=1000, x_t=None, y_t=None):
     losses = []
+    test_losses = []
     _, layers = model(x[0])  # to establish 'layers'
     start = time()
     for _ in range(epoch):
@@ -51,18 +52,25 @@ def training(x, y, model, loss_fn, optimizer=SGD, batch_size=32, epoch=1000):
         prediction = fpass[-1]
         loss, grad = loss_fn(Y, prediction)
 
+        X_t, Y_t = x_t[samp*(samp < len(x_t))], y_t[samp*(samp < len(x_t))]
+        fpt, _ = model(X_t, layers, relu)
+        prediction_t = fpt[-1]
+        loss_t, _ = loss_fn(Y_t, prediction_t)
+
         # target: automate [update_weight] -> updated model
         gradient = backward(grad, weights, fpass)
         update_weight = optimizer(gradient, weights, 1e-4)
         layers = update_weight
 
         losses.append(loss)
+        test_losses.append(loss_t)
     end = time()
     print("time: %.4f sec" % (end-start))
     print("loss: %.3f" % min(losses))
+    print("test loss: %.3f" % min(test_losses))
     plt.plot(losses)
-    plt.title("with relu")
-    # plt.show()
+    plt.plot(test_losses)
+    plt.show()
     return layers
 
 
@@ -72,7 +80,7 @@ optimizer = SGD
 batch_size = 32
 
 weights = training(x_train, y_train, model, loss_fn,
-                   optimizer, batch_size, epoch=300)
+                   optimizer, batch_size, epoch=300, x_t=x_test, y_t=y_test)
 
 # testing
 batch_size = 32
@@ -86,5 +94,6 @@ for i in range(300):
 print("test accuracy: %.3f" % (sum(accus)/len(accus)))
 
 plt.plot(accus)
-plt.legend(["training loss", "test accuracy"])
+plt.title("with relu")
+plt.legend(["training loss", "test loss", "test accuracy"])
 plt.show()

@@ -17,31 +17,33 @@ print(store, type(store[0]))
 
 def dropout(layer, nth_layer=0, prob=0.2, storage=None):
     """# try to prevent stroage got cleaned if unwanted"""
-    # idk how to append value w/ dict
     if storage is None:  # first epoch in training
         storage = {}  # {ith, value}
-    # only one layer is assigned
-    """maybe one at a time is fine"""
+    """maybe one layer at a time is fine"""
     if isinstance(nth_layer, int):
+        """
+        # restore process
         for i in range(len(layer)):
             if layer[i].all() == 0.:
                 pass
-                "restore it using storage"
+                layer[i] = storage[i]
+        """
+        for i in range(len(layer)):
             if np.random.uniform() < prob:
+                # probably don't need this once we figure out the storage release problem
                 if not layer[i].all() == 0.:
                     storage[i] = np.array(list(testlayer[i]), dtype=np.float32)
-                print("\nindex: ", i, " should store: ",
-                      testlayer[i])
+                print("\nindex: ", i, " should store: ", testlayer[i])
                 testlayer[i] *= 0.
     return layer, storage
 
 
 testlayer = np.random.uniform(-10., 10., size=(5, 5)).astype(np.float32)
-for i in range(1):  # training loop
+# training loop
+for i in range(2):
     print("\nepoch: %d" % (i+1))
     print("\nbefore: \n\n", testlayer)
     after_dropout, storage = dropout(
-        testlayer, storage=(None if i == 0 else storage))
+        testlayer, storage=(None if i == 0 else storage), prob=.5)
     print("\nafter: \n\n", after_dropout)
-
-print("\n\n", storage)
+    print("\n", storage)

@@ -70,7 +70,6 @@ def training(x, y, model, loss_fn, optimizer=SGD, batch_size=32, epoch=1000, x_t
     print("test loss: %.3f" % min(test_losses))
     plt.plot(losses)
     plt.plot(test_losses)
-    plt.show()
     return layers
 
 

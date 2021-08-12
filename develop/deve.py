@@ -139,5 +139,6 @@ plt.rc('font',size=25)
 plt.imshow(weights[1].reshape((32,40)))
 plt.title("2nd layer")
 plt.show()
+plt.imsave("layer_2.jpg",(weights[1].reshape((32,40))))
 
 

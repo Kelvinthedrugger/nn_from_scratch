@@ -20,8 +20,8 @@
 
    f(ith): forward pass from layer i, e.g. output is f(last)
 
-   input --> layer 1 --> layer 2 --> ... --> layer n --> output
    							
+   input --> layer 1 --> layer 2 --> ... --> layer n --> output
 	   					     gradient <-- loss
        d_layer 1 <- d_layer 2 <- ... <- d_layer n
 

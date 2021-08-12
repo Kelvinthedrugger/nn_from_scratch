@@ -57,6 +57,7 @@ def dropout(layer, nth_layer, prob=0.2):
     pass
 """
 
+
 def training(x, y, model, loss_fn, optimizer=SGD, batch_size=32, epoch=1000, x_t=None, y_t=None, kernel_regularizer=None, early_stops=False, patience=5):
     losses = []
     test_losses = []
@@ -91,8 +92,8 @@ def training(x, y, model, loss_fn, optimizer=SGD, batch_size=32, epoch=1000, x_t
                 break
 
     end = time()
-    """
     print("time: %.4f sec" % (end-start))
+    """
     print("loss: %.3f" % (losses[-1]))
     print("test loss: %.3f" % (test_losses[-1]))
     plt.plot(losses)
@@ -134,11 +135,10 @@ plt.title("1st layer")
 #plt.show()
 """
 
-plt.figure(figsize=(12,7))
-plt.rc('font',size=25)
-plt.imshow(weights[1].reshape((32,40)))
+plt.figure(figsize=(12, 7))
+plt.rc('font', size=25)
+plt.imshow(weights[1].reshape((32, 40)))
+
 plt.title("2nd layer")
 plt.show()
-plt.imsave("layer_2.jpg",(weights[1].reshape((32,40))))
-
-
+plt.imsave("layer_2.jpg", (weights[1].reshape((32, 40))))

@@ -1,9 +1,22 @@
 # TODO
 
- add dropout
+ add dropout: restore-release part and voila
 
  add monitor of training also, might be a good practice to wrap up .py into .exe
 
  custom forward pass, starts from convolution
 
- 
+ for efficiency:
+
+  configure the layers with 'dict', since dict is run by reference, which should save us some time 
+
+  at the update-weight step (where optimizer takes action), instead of redeclare the weights 
+
+  and assign them to the model in the training loop
+
+ super hard: 
+
+  modularize all the stuff to deploy auto differentiation without hand-coded 
+
+  procedures of backprop everytime a new model is establish
+

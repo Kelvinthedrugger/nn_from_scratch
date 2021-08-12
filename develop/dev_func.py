@@ -1,18 +1,5 @@
-"""use to test functions that are more complicated"""
+"""used to test functions that are more complicated"""
 import numpy as np
-
-
-"""quick guide
-store = {}  # dict is essentially dixk
-testlayer = np.random.uniform(-10., 10., size=(5, 5)).astype(np.float32)
-if np.random.uniform() < 0.8:
-    print(testlayer)
-    store[0] = np.array(list(testlayer[0]), dtype=np.float32)
-    print("\nindex: ", 0, " should store: ", testlayer[0])
-    testlayer[0] *= 0.
-    print(testlayer, type(testlayer[0]))
-print(store, type(store[0]))
-"""
 
 
 def dropout(layer, nth_layer=0, prob=0.2, storage=None):
@@ -23,10 +10,9 @@ def dropout(layer, nth_layer=0, prob=0.2, storage=None):
     if isinstance(nth_layer, int):
         """
         # restore process
-        for i in range(len(layer)):
-            if layer[i].all() == 0.:
-                pass
-                layer[i] = storage[i]
+        for weight in layer:
+            if the layer is all 0.
+                fill in the original weight according to index
         """
         for i in range(len(layer)):
             if np.random.uniform() < prob:

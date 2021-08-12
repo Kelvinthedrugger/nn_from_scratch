@@ -137,7 +137,7 @@ plt.title("1st layer")
 
 plt.figure(figsize=(12, 7))
 plt.rc('font', size=25)
-plt.imshow(weights[1].reshape((32, 40)))
+plt.imshow(weights[1].reshape((32, 40)), cmap='gray')
 
 plt.title("2nd layer")
 plt.show()

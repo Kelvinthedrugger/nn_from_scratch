@@ -1,38 +1,41 @@
-"""used to test functions that are more complicated"""
+"""used to develop functions that are more complicated"""
 import numpy as np
 
+"""
+implement convolution operation first:
 
-def dropout(layer, nth_layer=0, prob=0.2, storage=None):
+# a_total: input: n*n*bs array (assume bs=1 right now)
+# b: filter: 3 x 3 layer (for a single filter, actually m x m)
+# a: 3 x 3 layer (same as filter) from input layer
 
-    if storage is None:  # first epoch in training
-        """probably we can improve this argument"""
-        storage = {}  # {ith, value}
-    """maybe one layer at a time is fine"""
-    if isinstance(nth_layer, int):
+-> multiplying element-wisely and summation: np.multiply(a,b).sum() # scalar
+-> pass the product at the center of filter position: cause shape reduction
 
-        for i in range(len(layer)):
-            # can be optimized with just looking at the first element, kinda buggy
-            if layer[i].all() == 0.:
-                layer[i] = storage[i]  # restore the layers
-
-        storage = {}  # release the memory
-
-        for i in range(len(layer)):
-            if np.random.uniform() < prob:
-                if not layer[i].all() == 0.:
-                    storage[i] = np.array(list(layer[i]), dtype=np.float32)
-                #print("\nindex: ", i, " should store: ", layer[i])
-                layer[i] *= 0.
-    return layer, storage
+output: (n-2) x (n-2) x units array (3-1= 2)
+"""
 
 
-"""   # DON'T SHOW THESE BESIDES TESTING IN THIS PROGRAM
-testlayer = np.random.uniform(-10., 10., size=(5, 5)).astype(np.float32)
-# training loop
-for i in range(5):
-    print("\nepoch: %d" % (i+1))
-    print("\nbefore: \n\n", testlayer)
-    after_dropout, storage = dropout(
-        testlayer, storage=(None if i == 0 else storage), prob=.5)
-    print("\nafter: \n\n", after_dropout)
-    print("\n", storage)"""
+# input: a single layer
+def conv_op(layer, units=1, kernel_size=3):
+    """figure out how to do fast approximation instead of n^3 complexity piece of crap"""
+    # go figure the shape problem more concisely
+    h, w = layer.shape
+    # use layer_init to replace at the end
+    conv_layer = np.random.uniform(-1., 1.,
+                                   size=(kernel_size, kernel_size, units))
+    for r in range(units):
+        for k in range(h-kernel_size+1):  # 5-3+1
+            for m in range(w-kernel_size+1):
+                partial = np.array([layer[i+k, j+m] for i in range(3)
+                                    for j in range(3)], dtype=np.float32).reshape((3, 3))
+                print("\npartial:\n", partial)
+                mul = np.multiply(partial, conv_layer[:, :, r]).sum()
+                print("\nmultiplication: %.4f" % (mul))
+
+
+"""
+np.random.seed(1337)  # for reproducibility
+# test below
+test = np.array(list(range(25)), dtype=np.float32).reshape((5, 5))
+conv_op(test)
+"""

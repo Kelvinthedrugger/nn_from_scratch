@@ -1,8 +1,8 @@
 from time import time
 import matplotlib.pyplot as plt
 import numpy as np
-from helper import layer_init, CE, SGD, relu, act_df, kernel_L1, kernel_L2
-from dev_func import dropout  # real deal right here
+from helper import layer_init, CE, SGD, relu, act_df, kernel_L1, kernel_L2, dropout
+# from dev_func import dropout  # real deal right here
 from fetch_it import mnist
 
 x_train, y_train, x_test, y_test = mnist()

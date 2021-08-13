@@ -106,7 +106,7 @@ weights = training(x_train, y_train, model, loss_fn,
 # testing
 batch_size = 32  # handy
 accus = []
-for i in range(300):
+for i in range(1000):
     output, _ = model(x_test[i:i+batch_size], weights, relu)
     pred = output[-1]
     accus.append(

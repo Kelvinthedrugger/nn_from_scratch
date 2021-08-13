@@ -41,26 +41,6 @@ def backward(grad, weights, fpass):
     return gradient[::-1]
 
 
-"""
-add dropout
-
-deactivate units in the specified layer with probability = prob
-
-for ith unit in layer1:
-  # requires storage:(i, ith unit)
-  if ith unit = 0: # previously dropped out
-   ith unit = storage(i, ith unit)
-  index = uniform(0,1)
-  if index < prob:
-   unit = 0
-
-def dropout(layer, nth_layer, prob=0.2):
-    pass
-"""
-
-"""with dropout now"""
-
-
 def training(x, y, model, loss_fn, optimizer=SGD, batch_size=32, epoch=1000, x_t=None, y_t=None, kernel_regularizer=None, early_stops=False, patience=5, to_dropout=None):
     losses = []
     test_losses = []

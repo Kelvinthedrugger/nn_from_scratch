@@ -2,7 +2,6 @@ from time import time
 import matplotlib.pyplot as plt
 import numpy as np
 from helper import layer_init, CE, SGD, relu, act_df, kernel_L1, kernel_L2, dropout
-# from dev_func import dropout  # real deal right here
 from fetch_it import mnist
 
 x_train, y_train, x_test, y_test = mnist()
@@ -56,9 +55,11 @@ def training(x, y, model, loss_fn, optimizer=SGD, batch_size=32, epoch=1000, x_t
         if to_dropout is not None:
             weights[to_dropout], storage_0 = dropout(
                 weights[to_dropout], storage=(None if i == 0 else storage_0), prob=.2)
-
-            # weights[1], storage_1 = dropout(weights[1], storage=(
-            #     None if i == 0 else storage_1), prob=.2)
+            """
+            # 2nd layer dropout is lame; probably because it's the last layer
+            weights[1], storage_1 = dropout(weights[1], storage=(
+                None if i == 0 else storage_1), prob=.2)
+            """
 
         prediction = fpass[-1]
         loss, grad = loss_fn(Y, prediction)
@@ -70,10 +71,8 @@ def training(x, y, model, loss_fn, optimizer=SGD, batch_size=32, epoch=1000, x_t
         prediction_t = fpt[-1]
         loss_t, _ = loss_fn(Y_t, prediction_t)
 
-        # target: automate [update_weight] -> updated model
         gradient = backward(grad, weights, fpass)
-        update_weight = optimizer(gradient, weights, 1e-4)
-        layers = update_weight
+        layers = optimizer(gradient, weights, 1e-4)
 
         losses.append(loss)
         test_losses.append(loss_t)
@@ -101,10 +100,10 @@ optimizer = SGD
 batch_size = 32
 
 weights = training(x_train, y_train, model, loss_fn,
-                   optimizer, batch_size, epoch=100, x_t=x_test, y_t=y_test, kernel_regularizer=kernel_L2, early_stops=True, patience=20, to_dropout=0)
+                   optimizer, batch_size, epoch=200, x_t=x_test, y_t=y_test, kernel_regularizer=kernel_L2, early_stops=False, patience=20, to_dropout=0)
 
 # testing
-batch_size = 32  # handy
+batch_size = 32  # handy to test
 accus = []
 for i in range(1000):
     output, _ = model(x_test[i:i+batch_size], weights, relu)

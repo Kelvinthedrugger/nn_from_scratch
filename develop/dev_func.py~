@@ -11,10 +11,11 @@ def dropout(layer, nth_layer=0, prob=0.2, storage=None):
     if isinstance(nth_layer, int):
 
         for i in range(len(layer)):
-            # can be optimized with just looking at the first element, kinda buggy
+            # can be optimized with just looking at the first element
+            # and now i'd like to make sure everything is fine
             if layer[i].all() == 0.:
+           # if layer[i][0] == 0.:
                 layer[i] = storage[i]  # restore the layers
-
         storage = {}  # release the memory
 
         for i in range(len(layer)):
@@ -26,7 +27,7 @@ def dropout(layer, nth_layer=0, prob=0.2, storage=None):
     return layer, storage
 
 
-"""   # DON'T SHOW THESE BESIDES TESTING IN THIS PROGRAM
+"""
 testlayer = np.random.uniform(-10., 10., size=(5, 5)).astype(np.float32)
 # training loop
 for i in range(5):

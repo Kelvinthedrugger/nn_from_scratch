@@ -138,7 +138,10 @@ plt.title("1st layer")
 plt.figure(figsize=(12, 7))
 plt.rc('font', size=25)
 plt.imshow(weights[1].reshape((32, 40)), cmap='gray')
-
 plt.title("2nd layer")
 plt.show()
-plt.imsave("layer_2.jpg", (weights[1].reshape((32, 40))))
+visual = weights[1]
+assert visual[0:10].shape == (10, 10)
+plt.imshow(visual[0:10], cmap='gray')
+plt.show()
+#plt.imsave("layer_2.jpg", (weights[1].reshape((32, 40))))

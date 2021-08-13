@@ -4,5 +4,9 @@
  Just a simple practice in leisure time to understand what happened under the hood.
  
  remember to check develop for lastest files
+
+      cd develop
+
+      python -m deve
  
  Inspired by GeoHotz https://www.youtube.com/watch?v=JRlyw6LO5qo

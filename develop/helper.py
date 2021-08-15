@@ -1,6 +1,13 @@
 import numpy as np
 
 
+def build_model(input_shape):
+    """
+    general method: like Sequential and more complex one
+    """
+    pass
+
+
 def layer_init(h, w, batch_size=None):
     if batch_size is not None:
         return np.random.uniform(-1., 1., size=(batch_size, h, w))/np.sqrt(h*w)

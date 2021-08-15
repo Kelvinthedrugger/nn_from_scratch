@@ -9,13 +9,6 @@ x_train, y_train, x_test, y_test = mnist()
 """looks like what ive done in testfile.py but it is temporary"""
 
 
-def build_model(input_shape):
-    """
-    general method: like Sequential and more complex one
-    """
-    pass
-
-
 def BobNet(x, layers=None, input_shape=None, act=act_df):
     x = x.reshape((-1, 28*28))
     if layers is not None:

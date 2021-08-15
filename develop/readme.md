@@ -1,10 +1,10 @@
 # TODO
 
- add dropout: restore-release part and voila
+ add dropout: restore-release part and voila: done
 
  add monitor of training also, might be a good practice to wrap up .py into .exe
 
- custom forward pass, starts from convolution
+ custom forward pass, starts from CNN
 
 
  for efficiency:

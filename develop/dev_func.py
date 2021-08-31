@@ -32,6 +32,7 @@ def conv_op(layer, units=1, kernel_size=3):
     return result, conv_layer
 
 
+# not done yet: conv operation does not like simple forward pass
 def conv_back(fpass, weights):
     """implement backprop of conv layers: can combine with conv_op()"""
     # assume no loss function; i.e. gradient of loss = identity

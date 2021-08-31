@@ -2,17 +2,6 @@
 import numpy as np
 
 """
-implement convolution operation first:
-
-# a_total: input: n*n*bs array (assume bs=1 right now)
-# b: filter: 3 x 3 layer (for a single filter, actually m x m)
-# a: 3 x 3 layer (same as filter) from input layer
-
--> multiplying element-wisely and summation: np.multiply(a,b).sum() # scalar
--> pass the product at the center of filter position: cause shape reduction
-
-output: (n-2) x (n-2) x units array (3-1= 2)
-
 tensorflow api: 
  input_shape = (28,28)
  kernelsize = 3
@@ -22,14 +11,13 @@ tensorflow api:
 """
 
 
-# input: a single layer
 def conv_op(layer, units=1, kernel_size=3):
     """figure out how to do fast approximation instead of n^3 complexity piece of crap"""
     h, w = layer.shape
     # use layer_init to replace at the end
     conv_layer = np.random.uniform(-1., 1.,
                                    size=(kernel_size, kernel_size, units))
-    # (filter,row,col)
+
     r_size = (kernel_size - 1) // 2 + 1
     result = np.zeros((units, h-r_size, w-r_size), dtype=np.float32)
     for r in range(units):
@@ -42,6 +30,11 @@ def conv_op(layer, units=1, kernel_size=3):
                 # print("\nmultiplication: %.4f" % (mul))
                 result[r, k, m] = mul
     return result
+
+
+def conv_back():
+    """implement backprop of conv layers"""
+    pass
 
 
 """

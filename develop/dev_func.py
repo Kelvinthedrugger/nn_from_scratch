@@ -29,18 +29,25 @@ def conv_op(layer, units=1, kernel_size=3):
                 # print("\npartial:\n", partial)
                 # print("\nmultiplication: %.4f" % (mul))
                 result[r, k, m] = mul
-    return result
+    return result, conv_layer
 
 
-def conv_back():
-    """implement backprop of conv layers"""
-    pass
+def conv_back(fpass, weights):
+    """implement backprop of conv layers: can combine with conv_op()"""
+    # assume no loss function; i.e. gradient of loss = identity
+    gradient = np.zeros(fpass.shape, dtype=np.float32)
+
+    for i in range(fpass.shape[0]):
+        gradient[i] = fpass[i].T @ weights[:, :, i]
+
+    return gradient
 
 
-"""
 np.random.seed(1337)  # for reproducibility
 # test below
 test = np.array(list(range(25)), dtype=np.float32).reshape((5, 5))
 print("\ntest:\n\n", test)
-print("\nresult:\n\n", conv_op(test, units=2))
-"""
+output, weights = conv_op(test, units=2)
+print("\nresult:\n\n", output)
+
+print("\ngradient\n\n", conv_back(output, weights))

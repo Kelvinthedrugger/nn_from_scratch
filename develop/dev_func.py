@@ -29,8 +29,9 @@ def conv_op(layer, units=1, kernel_size=3):
     # use layer_init to replace at the end
     conv_layer = np.random.uniform(-1., 1.,
                                    size=(kernel_size, kernel_size, units))
-    # use numpy to run faster
-    result = np.zeros((h-2, w-2), dtype=np.float32)
+    # (filter,row,col)
+    r_size = (kernel_size - 1) // 2 + 1
+    result = np.zeros((units, h-r_size, w-r_size), dtype=np.float32)
     for r in range(units):
         for k in range(h-kernel_size+1):  # 5-3+1
             for m in range(w-kernel_size+1):
@@ -39,12 +40,14 @@ def conv_op(layer, units=1, kernel_size=3):
                 mul = np.multiply(partial, conv_layer[:, :, r]).sum()
                 # print("\npartial:\n", partial)
                 # print("\nmultiplication: %.4f" % (mul))
-                result[k, m] = mul
+                result[r, k, m] = mul
     return result
 
 
+"""
 np.random.seed(1337)  # for reproducibility
 # test below
 test = np.array(list(range(25)), dtype=np.float32).reshape((5, 5))
 print("\ntest:\n\n", test)
-print("\nresult:\n\n", conv_op(test))
+print("\nresult:\n\n", conv_op(test, units=2))
+"""

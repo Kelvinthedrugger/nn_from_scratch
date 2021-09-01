@@ -59,14 +59,16 @@ class layers:
 
 class Dense(layers):
     """"
+    __call__: should be forward pass
     backward(): auto diff
     """
 
     def __init__(self, shape):
         super().__init__(shape)
 
-    def __call__(self):
-        return self.weights
+    def __call__(self, x):
+        self.x = x
+        return self.x @ self.weights
 
 
 class optim:
@@ -85,8 +87,8 @@ class optim:
 size1 = (784, 128)
 L1 = layers(size1)
 print(L1().shape)
-print(Dense(size1)().shape)
-
+tmp = np.random.uniform(-1., 1., size=(1, 784))
+print(Dense(size1)(tmp).shape)
 l1 = np.array([1, 2, 3, 4, 5], dtype=np.float32)
 dl1 = np.random.uniform(-1., 1., size=l1.shape)
 print(l1)

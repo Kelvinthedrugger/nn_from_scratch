@@ -1,11 +1,12 @@
 """
+# useful: https://towardsdatascience.com/computational-graphs-in-pytorch-and-tensorflow-c25cc40bdcd1
 implement graph computation to achieve
 auto-differentiation
 from torch:
-Tensor:                  Function
- grad         input -->  forward --> output
-                            V
-grad_fn  out_gradient <- backward <- in_gradient
+Tensor:                     Function
+ grad            input -->  forward --> output
+                               V
+grad_fn     out_gradient <- backward <- in_gradient
 """
 import numpy as np
 from helper import layer_init

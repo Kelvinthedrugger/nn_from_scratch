@@ -23,22 +23,44 @@ class layer:
         self.weights = layer_init(self.shape[0], self.shape[1])
         self.x = x
         self.output = x @ self.weights
-        print("\nforward:\n", self.output)
+        print(self.weights, end="\n\n")
+        print(self.output)
+        assert self.output.shape == self.x.shape
+        return self.output
 
     def backward(self, in_gradient):
         self.in_gradient = in_gradient
-        self.out_gradient = self.x.T @ self.in_gradient
-        print("\ngradient:\n", self.out_gradient)
+        print(self.in_gradient, end="\n\n")
+        print(self.x, end="\n\n")
+        print(self.weights, end="\n\n")
+        self.out_gradient = self.x.T @ (self.in_gradient @ (self.weights.T))
+        print(self.out_gradient)
+        return self.out_gradient
 
 
+"""
+x -> L1 -> L2 -> yhat
+grad -> dL2 -> dL1
+"""
 # reproducibility
 np.random.seed(1337)
 # init
 size1 = (2, 2)
 L1 = layer(size1)
+L2 = layer(size1)
 # forward pass
 x = np.random.randint(0, 10, size=(2, 1)).T
-L1(x)
+print("\nlayer1:\n")
+print("input: ", x, end="\n\n")
+x = L1(x)
+print("\nx: \n\n", x)
+print("\nlayer2:\n")
+x = L2(x)
 # backprops
 in_gradient = np.random.uniform(-1., 1., size=x.shape)
-L1.backward(in_gradient)
+print("\ndL2\n")
+L2.backward(in_gradient)
+
+print("\ndL1\n")
+L1.backward(in_gradient)  # input was wrong
+print("\ndL1 using mul\n\n", x.T @ in_gradient)

@@ -42,14 +42,11 @@ class Model:
     """
     pass
 
-    def backward():
-        """backprop"""
-        pass
-
 
 class layers:
     """
     layers in general
+    allocate weight and its gradient inside seems fine
     """
 
     def __init__(self, shape):

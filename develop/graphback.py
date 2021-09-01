@@ -22,7 +22,7 @@ class layer:
         and computationally inexpensive"""
         self.weights = layer_init(self.shape[0], self.shape[1])
         self.x = x
-        self.output = x @ self.weights
+        self.output = self.x @ self.weights
         print(self.weights, end="\n\n")
         print(self.output)
         assert self.output.shape == self.x.shape

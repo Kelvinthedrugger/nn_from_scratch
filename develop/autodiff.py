@@ -34,14 +34,22 @@ def backward(grad, weights, fpass):
 # model doesn't contain value of input, but the weights themselves
 
 
-"""def Dense(x, layer):
-    return x @ layer"""
+class Model:
+    """
+    will involve graph
+    allocates all the layer
+    build up auto-diff
+    """
+    pass
+
+    def backward():
+        """backprop"""
+        pass
 
 
 class layers:
     """
     layers in general
-    will involve initialization, graph? maybe
     """
 
     def __init__(self, shape):
@@ -64,6 +72,19 @@ class Dense(layers):
         return x
 
 
+class optim:
+    def __init__(self, weights, learning_rate):
+        self.weights = weights
+        self.learning_rate = learning_rate
+
+    def sgd(self, gradient):
+        self.weights -= self.learning_rate*gradient
+        print(self.weights)
+
+    def adam(self, gradient):
+        pass
+
+
 x = np.random.uniform(-1., 1., size=(28, 28)).reshape((1, -1))
 
 Dense1 = Dense()
@@ -71,3 +92,8 @@ print(Dense1(x).shape)
 size1 = (784, 128)
 L1 = layers(size1)
 print(L1().shape)
+l1 = np.array([1, 2, 3, 4, 5], dtype=np.float32)
+dl1 = np.random.uniform(-1., 1., size=l1.shape)
+print(l1)
+optimizer = optim(l1, learning_rate=1e-3)
+optimizer.sgd(dl1)

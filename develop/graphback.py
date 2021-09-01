@@ -42,17 +42,17 @@ class loss_fn:
     def __init__(self):
         self.loss = 0
 
-    def mse(self, y, yhat):
-        self.loss = np.square(np.subtract(y, yhat)).mean(axis=1)
-        return self.loss
+    def mse(self, yhat, y):
+        self.loss = np.square(np.subtract(yhat, y)).mean(axis=1)
+        self.gradient = np.multiply(2, np.subtract(yhat, y)).mean(axis=1)
+        return self.loss, self.gradient
 
 
-"""
 MSE = loss_fn().mse
-y = np.array([[1, 2, 3, 4, 5]], dtype=np.uint8)
-yhat = np.array([[1, 2, 9, 4, 5]], dtype=np.uint8)
-print(MSE(y, yhat))
-"""
+y = np.array([[1, 2, 3, 4, 5]])
+yhat = np.array([[1, 2, 9, 4, 5]])
+print(MSE(yhat, y))
+
 """
 x -> L1 -> L2 -> yhat
 grad -> dL2 -> dL1

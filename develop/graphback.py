@@ -38,9 +38,25 @@ class layer:
         return self.out_gradient
 
 
+class loss_fn:
+    def __init__(self):
+        self.loss = 0
+
+    def mse(self, y, yhat):
+        self.loss = np.square(np.subtract(y, yhat)).mean(axis=1)
+        return self.loss
+
+
+"""
+MSE = loss_fn().mse
+y = np.array([[1, 2, 3, 4, 5]], dtype=np.uint8)
+yhat = np.array([[1, 2, 9, 4, 5]], dtype=np.uint8)
+print(MSE(y, yhat))
+"""
 """
 x -> L1 -> L2 -> yhat
 grad -> dL2 -> dL1
+"""
 """
 # reproducibility
 np.random.seed(1337)
@@ -64,3 +80,4 @@ L2.backward(in_gradient)
 print("\ndL1\n")
 L1.backward(in_gradient)  # input was wrong
 print("\ndL1 using mul\n\n", x.T @ in_gradient)
+"""

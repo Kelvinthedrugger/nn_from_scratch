@@ -64,7 +64,7 @@ class Dense(layers):
     """
 
     def __init__(self, shape):
-        super().__init__(shape)
+        super(Dense, self).__init__(shape)
 
     def __call__(self, x):
         self.x = x
@@ -80,17 +80,44 @@ class optim:
         self.weights -= self.learning_rate*gradient
         print(self.weights)
 
-    def adam(self, gradient):
-        pass
+    def adam(self, gradient, alpha=1e-3, b1=0.9, b2=0.999, eps=1e-8, t=0):
+        self.gradient = gradient
+        self.t = t  # time step
+        self.alpha = alpha
+        self.b1 = b1  # params
+        self.b2 = b2
+        self.eps = eps
+        m = 0
+        v = 0
+        while(self.t < 1e3):  # while gradient not converge
+            self.t += 1
+            m = self.b1*m+(1-self.b1)*self.gradient
+            v = self.b1*v+(1-self.b1)*self.gradient**2
+            mhat = m/(1-self.b1**self.t)
+            vhat = v/(1-self.b2**self.t)
+            self.gradient -= self.alpha*mhat/(vhat**0.5+self.eps)
+
+        self.weights -= self.learning_rate*self.gradient
+        print(self.weights)
 
 
+# layer
 size1 = (784, 128)
 L1 = layers(size1)
 print(L1().shape)
+
+# Dense: forward
 tmp = np.random.uniform(-1., 1., size=(1, 784))
 print(Dense(size1)(tmp).shape)
+
+# SGD
 l1 = np.array([1, 2, 3, 4, 5], dtype=np.float32)
 dl1 = np.random.uniform(-1., 1., size=l1.shape)
 print(l1)
 optimizer = optim(l1, learning_rate=1e-3)
 optimizer.sgd(dl1)
+# Adam
+l1 = np.array([1, 2, 3, 4, 5], dtype=np.float32)
+dl1 = np.random.uniform(-1., 1., size=l1.shape)
+print(l1)
+optimizer.adam(dl1)

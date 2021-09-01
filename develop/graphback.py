@@ -16,7 +16,7 @@ class layer:
         """build on graph"""
         self.shape = shape
 
-    def forward(self, x):
+    def __call__(self, x):
         """input row vector is much easier
         and computationally inexpensive"""
         self.weights = layer_init(self.shape[0], self.shape[1])
@@ -37,7 +37,7 @@ size1 = (2, 2)
 L1 = layer(size1)
 # forward pass
 x = np.random.randint(0, 10, size=(2, 1)).T
-L1.forward(x)
+L1(x)
 # backprops
 in_gradient = np.random.uniform(-1., 1., size=x.shape)
 L1.backward(in_gradient)

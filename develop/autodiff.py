@@ -89,7 +89,7 @@ class optim:
         self.eps = eps
         m = 0
         v = 0
-        while(self.t < 1e3):  # while gradient not converge
+        while(self.t < 2e3):  # while gradient does not converge
             self.t += 1
             m = self.b1*m+(1-self.b1)*self.gradient
             v = self.b1*v+(1-self.b1)*self.gradient**2
@@ -99,8 +99,11 @@ class optim:
 
         self.weights -= self.learning_rate*self.gradient
         print(self.weights)
+        print(self.alpha*mhat/(vhat**0.5+self.eps))
 
 
+# for reproducibility
+np.random.seed(1337)
 # layer
 size1 = (784, 128)
 L1 = layers(size1)

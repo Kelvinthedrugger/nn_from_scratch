@@ -38,9 +38,33 @@ class Model:
     """
     will involve graph
     allocates all the layer
-    build up auto-diff
     """
     pass
+
+
+class CEloss:
+    """
+    crossentropy loss:
+    loss.backward(): backprop
+    """
+
+    def __init__(self):
+        self.loss = 0
+        self.gradient = 0
+
+    def __call__(self, labels, fpass, num_classes):
+        # encoding
+        self.labels = np.zeros((len(labels), num_classes), np.float32)
+        self.labels[range(self.labels.shape[0]), labels] = 1
+        print("labels: ", self.labels)  # wrong
+
+        loce = -fpass + np.log(np.exp(fpass).sum(axis=1)).reshape((-1, 1))
+        self.loss = (self.labels*loce).mean()  # loss: scalar
+        dloss = self.labels/len(labels)
+        self.gradient = -dloss + \
+            np.exp(-loce)*dloss.sum(axis=1).reshape((-1, 1))  # gradient: vector
+        print("loss: %.4f" % (self.loss))
+        print("gradient: ", self.gradient)
 
 
 class layers:
@@ -58,10 +82,6 @@ class layers:
 
 
 class Dense(layers):
-    """"
-    __call__: should be forward pass
-    backward(): auto diff
-    """
 
     def __init__(self, shape):
         super(Dense, self).__init__(shape)
@@ -77,6 +97,7 @@ class optim:
         self.learning_rate = learning_rate
 
     def sgd(self, gradient):
+        """replace 'gradient' after backward() is done"""
         self.weights -= self.learning_rate*gradient
         print(self.weights)
 
@@ -124,3 +145,9 @@ l1 = np.array([1, 2, 3, 4, 5], dtype=np.float32)
 dl1 = np.random.uniform(-1., 1., size=l1.shape)
 print(l1)
 optimizer.adam(dl1)
+# CEloss
+lossfn = CEloss()
+y = np.array([[1, 2, 3, 4, 0, 1, 1, 1, 1, 1]], dtype=np.uint8)
+yhat = np.array([[0, 4, 3, 2, 1, 1, 1, 1, 1, 1]], dtype=np.uint8)
+lossfn(y, y, num_classes=10)
+print("from helper: ", CE(y, y))

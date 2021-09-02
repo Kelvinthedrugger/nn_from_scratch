@@ -25,7 +25,6 @@ class layer:
         self.output = self.x @ self.weights
         print(self.weights, end="\n\n")
         print(self.output, end="\n\n")
-        assert self.output.shape == self.x.shape
         return self.output
 
     def backward(self, in_gradient):
@@ -155,8 +154,8 @@ grad -> dL2 -> dL1
 np.random.seed(1337)
 
 # init
-l1 = layer_init(2, 2)
-l2 = layer_init(2, 2)
+l1 = layer_init(2, 3)
+l2 = layer_init(3, 2)
 L1 = layer(l1)
 L2 = layer(l2)
 # forward pass
@@ -169,7 +168,7 @@ learning_rate = 1e-3
 optimizer = optim(learning_rate).SGD
 criterion = loss_fn.mse
 model.compile(optimizer, criterion)
-hist = model.fit(x1, y1)
+hist = model.fit(x1, y1, epochs=1)
 print(hist)
 # print("\nlayer1:\n")
 # print("input: ", x1, end="\n\n")

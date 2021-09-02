@@ -23,17 +23,13 @@ class layer:
         #self.weights = layer_init(self.shape[0], self.shape[1])
         self.x = x
         self.output = self.x @ self.weights
-        print(self.weights, end="\n\n")
-        print(self.output, end="\n\n")
         return self.output
 
     def backward(self, in_gradient):
         self.in_gradient = in_gradient
-        print(self.in_gradient, end="\n\n")
-        print(self.x, end="\n\n")
-        print(self.weights, end="\n\n")
-        self.out_gradient = self.x.T @ (self.in_gradient @ (self.weights.T))
-        print(self.out_gradient)
+        # needs modification
+        # self.out_gradient = self.x.T @ (self.in_gradient @ (self.weights.T))
+        self.out_gradient = self.x.T @ self.in_gradient
         return self.out_gradient
 
 
@@ -70,10 +66,19 @@ class Model:
     def fit(self, x, y, epochs=2):
         self.history = {"loss": [], "accuracy": []}
         for _ in range(epochs):
+            # forward pass
             yhat = self.predict(x)
+            # loss, gradient of loss
             self.loss, self.gradient = self.lossf(self, yhat, y)
+            # should be backprop here
+            for weight in self.model[::-1]:
+                print(self.gradient, end="\n\n")
+                self.d_weights = weight.backward(self.gradient)
+                # propogate gradient through layer
+                self.gradient = self.gradient @ (weight.weights.T)
+            # weight update
             for weight in self.model:
-                weight.weights = self.optimizer(weight.weights, self.gradient)
+                weight.weights = self.optimizer(weight.weights, self.d_weights)
             self.history["loss"].append(self.loss.mean())
             self.history["accuracy"].append(
                 (yhat == y).astype(np.float32).mean(axis=1))

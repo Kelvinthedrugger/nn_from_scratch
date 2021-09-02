@@ -82,7 +82,8 @@ class Model:
             self.loss, self.gradient = self.lossf(yhat, y)
             self.optimizer()
             self.history["loss"].append(self.loss.mean())
-            self.history["accuracy"].append((yhat == y).sum(axis=1))
+            self.history["accuracy"].append(
+                (yhat == y).astype(np.float32).mean(axis=1))
 
         return self.history
 

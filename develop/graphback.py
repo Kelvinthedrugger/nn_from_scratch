@@ -80,7 +80,8 @@ class Model:
         for _ in epochs:
             yhat = self.predict(x)
             self.loss, self.gradient = self.lossf(yhat, y)
-            self.optimizer()
+            self.optimizer([weight.weights for weight in self.model], [
+                           grad for grad in self])
             self.history["loss"].append(self.loss.mean())
             self.history["accuracy"].append(
                 (yhat == y).astype(np.float32).mean(axis=1))
@@ -101,15 +102,24 @@ class loss_fn:
 class optim:
     """original version"""
 
-    def __init__(self, weight, gradient):
-        # go figure out better api
+    # def __init__(self, weight, gradient):
+    #     # go figure out better api
+    #     self.weight = weight
+    #     self.gradient = gradient
+
+    # def SGD(self, learning_rate):
+    #     self.learning_rate = learning_rate
+    #     self.weight -= self.learning_rate*self.gradient
+    #     print(self.weight)
+    #     return self.weight
+
+    def __init__(self, learning_rate):
+        self.learning_rate = learning_rate
+
+    def SGD(self, weight, gradient):
         self.weight = weight
         self.gradient = gradient
-
-    def SGD(self, learning_rate):
-        self.learning_rate = learning_rate
-        self.weight -= self.learning_rate*self.gradient
-        print(self.weight)
+        self.weight -= self.learning_rate * self.gradient
         return self.weight
 
     def Adam(self, learning_rate, alpha=1e-3, b1=0.9, b2=0.999, eps=1e-8):
@@ -196,7 +206,10 @@ model = Model()
 model([L1, L2])
 
 model.predict(x1)
-
-# optimizer = optim().SGD
+print("\nweights\n")
+print(L1.weights)
+print(L2.weights)
+learning_rate = 1e-3
+optimizer = optim(learning_rate).SGD
 # criterion = loss_fn.mse
 # model.compile(optimizer, criterion)

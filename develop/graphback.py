@@ -44,22 +44,17 @@ class loss_fn:
 
     def mse(self, yhat, y):
         self.loss = np.square(np.subtract(yhat, y)).mean(axis=1)
-        self.gradient = np.multiply(2, np.subtract(yhat, y)).mean(axis=1)
-        return self.loss, self.gradient
+        self.gradient = np.multiply(2, np.subtract(yhat, y))
+        return self.loss, self.gradient/(self.gradient.sum(axis=1))
 
-
-MSE = loss_fn().mse
-y = np.array([[1, 2, 3, 4, 5]])
-yhat = np.array([[1, 2, 9, 4, 5]])
-print(MSE(yhat, y))
 
 """
 x -> L1 -> L2 -> yhat
 grad -> dL2 -> dL1
 """
-"""
 # reproducibility
 np.random.seed(1337)
+
 # init
 size1 = (2, 2)
 L1 = layer(size1)
@@ -69,15 +64,18 @@ x = np.random.randint(0, 10, size=(2, 1)).T
 print("\nlayer1:\n")
 print("input: ", x, end="\n\n")
 x = L1(x)
-print("\nx: \n\n", x)
 print("\nlayer2:\n")
 x = L2(x)
+# loss
+MSE = loss_fn().mse
+y = np.array([[3, 4, ]])
+loss, gradient = MSE(x, y)
 # backprops
-in_gradient = np.random.uniform(-1., 1., size=x.shape)
+#in_gradient = np.random.uniform(-1., 1., size=x.shape)
 print("\ndL2\n")
-L2.backward(in_gradient)
+# L2.backward(in_gradient)
+L2.backward(gradient)
 
 print("\ndL1\n")
-L1.backward(in_gradient)  # input was wrong
-print("\ndL1 using mul\n\n", x.T @ in_gradient)
-"""
+# L1.backward(in_gradient)  # input was wrong
+L1.backward(gradient)

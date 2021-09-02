@@ -80,8 +80,8 @@ class Model:
         for _ in epochs:
             yhat = self.predict(x)
             self.loss, self.gradient = self.lossf(yhat, y)
-            self.optimizer([weight.weights for weight in self.model], [
-                           grad for grad in self])
+            self.optimizer(
+                [weight.weights for weight in self.model], self.gradient)
             self.history["loss"].append(self.loss.mean())
             self.history["accuracy"].append(
                 (yhat == y).astype(np.float32).mean(axis=1))
@@ -204,7 +204,6 @@ x1 = np.random.randint(0, 10, size=(2, 1)).T
 print("\nmodel\n")
 model = Model()
 model([L1, L2])
-
 model.predict(x1)
 print("\nweights\n")
 print(L1.weights)

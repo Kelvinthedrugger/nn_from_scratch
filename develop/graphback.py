@@ -40,6 +40,16 @@ class layer:
         return self.out_gradient
 
 
+"""
+torch api:
+# forward + backward + optimize
+outputs = net(inputs)
+loss = loss_function(outputs, labels)
+loss.backward()
+optimizer.step()
+"""
+
+
 class Model:
     """
     allocate all the layers
@@ -89,25 +99,16 @@ class loss_fn:
 
 class optim:
     """original version"""
-    # def __init__(self, weight, gradient):
-    #     # go figure out better api
-    #     self.weight = weight
-    #     self.gradient = gradient
-    # def SGD(self, learning_rate):
-    #     self.learning_rate = learning_rate
-    #     self.weight -= self.learning_rate*self.gradient
-    #     print(self.weight)
-    #     return self.weight
-    """try-to-integrate version"""
 
-    def __init__(self):
-        self.weight = 0
-        self.gradient = 0
-
-    def SGD(self, learning_rate, weight=0, gradient=0):
+    def __init__(self, weight, gradient):
+        # go figure out better api
         self.weight = weight
-        self.gradient = self.gradient
-        self.weight -= learning_rate*self.gradient
+        self.gradient = gradient
+
+    def SGD(self, learning_rate):
+        self.learning_rate = learning_rate
+        self.weight -= self.learning_rate*self.gradient
+        print(self.weight)
         return self.weight
 
     def Adam(self, learning_rate, alpha=1e-3, b1=0.9, b2=0.999, eps=1e-8):
@@ -129,16 +130,6 @@ class optim:
 
         self.weight -= self.learning_rate*self.gradient
         return self.weight
-
-
-"""
-torch api:
-# forward + backward + optimize
-outputs = net(inputs)
-loss = loss_function(outputs, labels)
-loss.backward()
-optimizer.step()
-"""
 
 
 class Learner:
@@ -205,6 +196,6 @@ model([L1, L2])
 
 model.predict(x1)
 
-optimizer = optim().SGD(learning_rate=1e-3)
-criterion = loss_fn.mse
-model.compile(optimizer, criterion)
+# optimizer = optim().SGD
+# criterion = loss_fn.mse
+# model.compile(optimizer, criterion)

@@ -58,6 +58,23 @@ class Model:
         for layer in self.model:
             x = layer(x)
         return x
+    """i tried to do torch but now it looks like tf"""
+
+    def compile(self, optimizer, lossf):
+        # assign functions instead of classes
+        # try to integrate weight inside optimizer directly
+        # without taking another argument
+        self.optimizer = optimizer
+        self.lossf = lossf
+
+    def fit(self, x, y, epochs=2):
+        self.history = {"loss": [], "accuracy": []}
+        for _ in epochs:
+            yhat = self.predict(x)
+            self.loss, self.gradient = self.lossf(yhat, y)
+            self.optimizer()
+            self.history["loss"].append(self.loss.mean())
+            self.history["accuracy"].append((yhat == y).sum(axis=1))
 
 
 class loss_fn:
@@ -71,15 +88,26 @@ class loss_fn:
 
 
 class optim:
-    def __init__(self, weight, gradient):
-        # go figure out better api
-        self.weight = weight
-        self.gradient = gradient
+    """original version"""
+    # def __init__(self, weight, gradient):
+    #     # go figure out better api
+    #     self.weight = weight
+    #     self.gradient = gradient
+    # def SGD(self, learning_rate):
+    #     self.learning_rate = learning_rate
+    #     self.weight -= self.learning_rate*self.gradient
+    #     print(self.weight)
+    #     return self.weight
+    """try-to-integrate version"""
 
-    def SGD(self, learning_rate):
-        self.learning_rate = learning_rate
-        self.weight -= self.learning_rate*self.gradient
-        print(self.weight)
+    def __init__(self):
+        self.weight = 0
+        self.gradient = 0
+
+    def SGD(self, learning_rate, weight=0, gradient=0):
+        self.weight = weight
+        self.gradient = self.gradient
+        self.weight -= learning_rate*self.gradient
         return self.weight
 
     def Adam(self, learning_rate, alpha=1e-3, b1=0.9, b2=0.999, eps=1e-8):
@@ -152,26 +180,31 @@ L1 = layer(l1)
 L2 = layer(l2)
 # forward pass
 x1 = np.random.randint(0, 10, size=(2, 1)).T
-print("\nlayer1:\n")
-print("input: ", x1, end="\n\n")
-x = L1(x1)
-print("\nlayer2:\n")
-x = L2(x)
-# loss
-MSE = loss_fn().mse
-y = np.array([[3, 4, ]])
-loss, gradient = MSE(x, y)
-# backprops
-print("\ndL2\n")
-dL2 = L2.backward(gradient)
-print("\ndL1\n")
-dL1 = L1.backward(gradient)  # weight was not returned
-print("\nupdated\n")
-optimizer = optim(L2.weights, dL2).SGD(1e-3)
-optimizer = optim(L2.weights, dL2).Adam(1e-3)
+# print("\nlayer1:\n")
+# print("input: ", x1, end="\n\n")
+# x = L1(x1)
+# print("\nlayer2:\n")
+# x = L2(x)
+# # loss
+# MSE = loss_fn().mse
+# y = np.array([[3, 4, ]])
+# loss, gradient = MSE(x, y)
+# print("loss and grad: ", loss, gradient)
+# # backprops
+# print("\ndL2\n")
+# dL2 = L2.backward(gradient)
+# print("\ndL1\n")
+# dL1 = L1.backward(gradient)  # weight was not returned
+# print("\nupdated\n")
+# optimizer = optim(L2.weights, dL2).SGD(1e-3)
+# optimizer = optim(L2.weights, dL2).Adam(1e-3)
 # model
 print("\nmodel\n")
 model = Model()
 model([L1, L2])
 
 model.predict(x1)
+
+optimizer = optim().SGD(learning_rate=1e-3)
+criterion = loss_fn.mse
+model.compile(optimizer, criterion)

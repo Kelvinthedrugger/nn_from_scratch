@@ -61,6 +61,7 @@ class optim:
         return self.weight
 
     def Adam(self, learning_rate, alpha=1e-3, b1=0.9, b2=0.999, eps=1e-8):
+        self.learning_rate = learning_rate
         self.alpha = alpha
         self.b1 = b1
         self.b2 = b2
@@ -114,3 +115,4 @@ print("\ndL1\n")
 dL1 = L1.backward(gradient)  # weight was not returned
 print("\nupdated\n")
 optimizer = optim(L2.weights, dL2).SGD(1e-3)
+optimizer = optim(L2.weights, dL2).Adam(1e-3)

@@ -62,20 +62,20 @@ class optim:
 
     def Adam(self, learning_rate, alpha=1e-3, b1=0.9, b2=0.999, eps=1e-8):
         self.learning_rate = learning_rate
-        self.alpha = alpha
-        self.b1 = b1
-        self.b2 = b2
-        self.eps = eps
+        alpha = alpha
+        b1 = b1
+        b2 = b2
+        eps = eps
         m = 0
         v = 0
         t = 0  # loop counter
         while(t < 2e3):  # while gradient does not converge
             t += 1
-            m = self.b1*m+(1-self.b1)*self.gradient
-            v = self.b1*v+(1-self.b1)*self.gradient**2
-            mhat = m/(1-self.b1**t)
-            vhat = v/(1-self.b2**t)
-            self.gradient -= self.alpha*mhat/(vhat**0.5+self.eps)
+            m = b1*m+(1-b1)*self.gradient
+            v = b1*v+(1-b1)*self.gradient**2
+            mhat = m/(1-b1**t)
+            vhat = v/(1-b2**t)
+            self.gradient -= alpha*mhat/(vhat**0.5+eps)
 
         self.weight -= self.learning_rate*self.gradient
         print(self.weight)

@@ -77,9 +77,9 @@ class Model:
 
     def fit(self, x, y, epochs=2):
         self.history = {"loss": [], "accuracy": []}
-        for _ in epochs:
+        for _ in range(epochs):
             yhat = self.predict(x)
-            self.loss, self.gradient = self.lossf(yhat, y)
+            self.loss, self.gradient = self.lossf(self, yhat, y)
             self.optimizer(
                 [weight.weights for weight in self.model], self.gradient)
             self.history["loss"].append(self.loss.mean())
@@ -182,6 +182,7 @@ L1 = layer(l1)
 L2 = layer(l2)
 # forward pass
 x1 = np.random.randint(0, 10, size=(2, 1)).T
+y1 = np.random.randint(0, 10, size=(2, 1)).T
 # print("\nlayer1:\n")
 # print("input: ", x1, end="\n\n")
 # x = L1(x1)
@@ -201,14 +202,10 @@ x1 = np.random.randint(0, 10, size=(2, 1)).T
 # optimizer = optim(L2.weights, dL2).SGD(1e-3)
 # optimizer = optim(L2.weights, dL2).Adam(1e-3)
 # model
-print("\nmodel\n")
 model = Model()
-model([L1, L2])
-model.predict(x1)
-print("\nweights\n")
-print(L1.weights)
-print(L2.weights)
+model([L1])
 learning_rate = 1e-3
 optimizer = optim(learning_rate).SGD
-# criterion = loss_fn.mse
-# model.compile(optimizer, criterion)
+criterion = loss_fn.mse
+model.compile(optimizer, criterion)
+hist = model.fit(x1, y1)

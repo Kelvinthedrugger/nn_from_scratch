@@ -60,7 +60,7 @@ class optim:
         print(self.weight)
         return self.weight
 
-    def Adam(self, alpha=1e-3, b1=0.9, b2=0.999, eps=1e-8):
+    def Adam(self, learning_rate, alpha=1e-3, b1=0.9, b2=0.999, eps=1e-8):
         self.alpha = alpha
         self.b1 = b1
         self.b2 = b2

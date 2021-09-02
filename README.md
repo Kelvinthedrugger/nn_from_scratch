@@ -9,4 +9,9 @@
 
       python -m deve
  
+ update: auto-diff
+
+      cd develop
+      python -m graphback
+
  Inspired by GeoHotz https://www.youtube.com/watch?v=JRlyw6LO5qo

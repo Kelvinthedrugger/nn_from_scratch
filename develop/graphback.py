@@ -65,6 +65,7 @@ class Model:
 
     def fit(self, x, y, epochs=2):
         self.history = {"loss": [], "accuracy": []}
+        self.d_weights = []
         for _ in range(epochs):
             # forward pass
             yhat = self.predict(x)
@@ -72,13 +73,17 @@ class Model:
             self.loss, self.gradient = self.lossf(self, yhat, y)
             # should be backprop here
             for weight in self.model[::-1]:
-                print(self.gradient, end="\n\n")
-                self.d_weights = weight.backward(self.gradient)
+                d_weights = weight.backward(self.gradient)
+                # allocate the d_layer
+                self.d_weights.append(d_weights)
                 # propogate gradient through layer
                 self.gradient = self.gradient @ (weight.weights.T)
+            # reverse back
+            self.d_weights = self.d_weights[::-1]
             # weight update
             for weight in self.model:
-                weight.weights = self.optimizer(weight.weights, self.d_weights)
+                weight.weights = self.optimizer(
+                    weight.weights, self.d_weights[self.model.index(weight)])
             self.history["loss"].append(self.loss.mean())
             self.history["accuracy"].append(
                 (yhat == y).astype(np.float32).mean(axis=1))
@@ -169,12 +174,12 @@ y1 = np.random.randint(0, 10, size=(2, 1)).T
 # model
 model = Model()
 model([L1, L2])
-learning_rate = 1e-3
-optimizer = optim(learning_rate).SGD
+learning_rate = 1e-5
+optimizer = optim(learning_rate).Adam
 criterion = loss_fn.mse
 model.compile(optimizer, criterion)
-hist = model.fit(x1, y1, epochs=1)
-print(hist)
+hist = model.fit(x1, y1, epochs=5)
+print("\n", hist["loss"], "\n\n", hist["accuracy"])
 # print("\nlayer1:\n")
 # print("input: ", x1, end="\n\n")
 # x = L1(x1)

@@ -13,14 +13,16 @@ from helper import layer_init
 
 
 class layer:
-    def __init__(self, shape):
-        """build on graph"""
-        self.shape = shape
+    # def __init__(self, shape):
+    #     """build on graph"""
+    #     self.shape = shape
+    def __init__(self, weights):
+        self.weights = weights
 
     def __call__(self, x):
         """input row vector is much easier
         and computationally inexpensive"""
-        self.weights = layer_init(self.shape[0], self.shape[1])
+        #self.weights = layer_init(self.shape[0], self.shape[1])
         self.x = x
         self.output = self.x @ self.weights
         print(self.weights, end="\n\n")
@@ -83,6 +85,33 @@ class optim:
 
 
 """
+torch api:
+# forward + backward + optimize
+outputs = net(inputs)
+loss = loss_function(outputs, labels)
+loss.backward()
+optimizer.step()
+"""
+
+
+class Learner:
+    """for better api, similar to model.compile() in tf"""
+    # or just create a complete class called 'Model'
+    # like tensorflow api
+
+    def __init__(self, model, lossf, optimizer):
+        self.model = model  # figure out how to assemble the layers
+        self.lossf = lossf  # loss function instead of the class
+        self.optimizer = optimizer  # function also
+
+    def __call__(self, x, y):
+        """forward-backward"""
+        yhat = self.model(x)
+        loss, gradient = self.lossf(yhat, y)
+        self.optimizer()
+
+
+"""
 x -> L1 -> L2 -> yhat
 grad -> dL2 -> dL1
 """
@@ -90,9 +119,13 @@ grad -> dL2 -> dL1
 np.random.seed(1337)
 
 # init
-size1 = (2, 2)
-L1 = layer(size1)
-L2 = layer(size1)
+# size1 = (2, 2)
+# L1 = layer(size1)
+# L2 = layer(size1)
+l1 = layer_init(2, 2)
+l2 = layer_init(2, 2)
+L1 = layer(l1)
+L2 = layer(l2)
 # forward pass
 x = np.random.randint(0, 10, size=(2, 1)).T
 print("\nlayer1:\n")
@@ -105,13 +138,9 @@ MSE = loss_fn().mse
 y = np.array([[3, 4, ]])
 loss, gradient = MSE(x, y)
 # backprops
-#in_gradient = np.random.uniform(-1., 1., size=x.shape)
 print("\ndL2\n")
-# L2.backward(in_gradient)
 dL2 = L2.backward(gradient)
-
 print("\ndL1\n")
-# L1.backward(in_gradient)
 dL1 = L1.backward(gradient)  # weight was not returned
 print("\nupdated\n")
 optimizer = optim(L2.weights, dL2).SGD(1e-3)

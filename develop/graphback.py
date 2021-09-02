@@ -13,9 +13,7 @@ from helper import layer_init
 
 
 class layer:
-    # def __init__(self, shape):
-    #     """build on graph"""
-    #     self.shape = shape
+
     def __init__(self, weights):
         self.weights = weights
 
@@ -52,7 +50,7 @@ optimizer.step()
 
 class Model:
     """
-    allocate all the layers
+    allocate all the layers without inherent from class: layer
     auto-diff with ease
     """
 
@@ -85,6 +83,8 @@ class Model:
             self.optimizer()
             self.history["loss"].append(self.loss.mean())
             self.history["accuracy"].append((yhat == y).sum(axis=1))
+
+        return self.history
 
 
 class loss_fn:

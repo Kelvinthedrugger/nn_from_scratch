@@ -40,6 +40,26 @@ class layer:
         return self.out_gradient
 
 
+class Model:
+    """
+    allocate all the layers
+    auto-diff with ease
+    """
+
+    def __init__(self):
+        self.model = []
+
+    def __call__(self, layers):
+        # layers: list of layer
+        for layer in layers:
+            self.model.append(layer)
+
+    def predict(self, x):
+        for layer in self.model:
+            x = layer(x)
+        return x
+
+
 class loss_fn:
     def __init__(self):
         self.loss = 0
@@ -80,7 +100,6 @@ class optim:
             self.gradient -= alpha*mhat/(vhat**0.5+eps)
 
         self.weight -= self.learning_rate*self.gradient
-        print(self.weight)
         return self.weight
 
 
@@ -132,10 +151,10 @@ l2 = layer_init(2, 2)
 L1 = layer(l1)
 L2 = layer(l2)
 # forward pass
-x = np.random.randint(0, 10, size=(2, 1)).T
+x1 = np.random.randint(0, 10, size=(2, 1)).T
 print("\nlayer1:\n")
-print("input: ", x, end="\n\n")
-x = L1(x)
+print("input: ", x1, end="\n\n")
+x = L1(x1)
 print("\nlayer2:\n")
 x = L2(x)
 # loss
@@ -150,3 +169,9 @@ dL1 = L1.backward(gradient)  # weight was not returned
 print("\nupdated\n")
 optimizer = optim(L2.weights, dL2).SGD(1e-3)
 optimizer = optim(L2.weights, dL2).Adam(1e-3)
+# model
+print("\nmodel\n")
+model = Model()
+model([L1, L2])
+
+model.predict(x1)

@@ -48,6 +48,39 @@ class loss_fn:
         return self.loss, self.gradient/(self.gradient.sum(axis=1))
 
 
+class optim:
+    def __init__(self, weight, gradient):
+        # go figure out better api
+        self.weight = weight
+        self.gradient = gradient
+
+    def SGD(self, learning_rate):
+        self.learning_rate = learning_rate
+        self.weight -= self.learning_rate*self.gradient
+        print(self.weight)
+        return self.weight
+
+    def Adam(self, alpha=1e-3, b1=0.9, b2=0.999, eps=1e-8):
+        self.alpha = alpha
+        self.b1 = b1
+        self.b2 = b2
+        self.eps = eps
+        m = 0
+        v = 0
+        t = 0  # loop counter
+        while(t < 2e3):  # while gradient does not converge
+            t += 1
+            m = self.b1*m+(1-self.b1)*self.gradient
+            v = self.b1*v+(1-self.b1)*self.gradient**2
+            mhat = m/(1-self.b1**t)
+            vhat = v/(1-self.b2**t)
+            self.gradient -= self.alpha*mhat/(vhat**0.5+self.eps)
+
+        self.weight -= self.learning_rate*self.gradient
+        print(self.weight)
+        return self.weight
+
+
 """
 x -> L1 -> L2 -> yhat
 grad -> dL2 -> dL1
@@ -74,8 +107,10 @@ loss, gradient = MSE(x, y)
 #in_gradient = np.random.uniform(-1., 1., size=x.shape)
 print("\ndL2\n")
 # L2.backward(in_gradient)
-L2.backward(gradient)
+dL2 = L2.backward(gradient)
 
 print("\ndL1\n")
-# L1.backward(in_gradient)  # input was wrong
-L1.backward(gradient)
+# L1.backward(in_gradient)
+dL1 = L1.backward(gradient)  # weight was not returned
+print("\nupdated\n")
+optimizer = optim(L2.weights, dL2).SGD(1e-3)

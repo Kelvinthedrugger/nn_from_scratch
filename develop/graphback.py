@@ -24,7 +24,7 @@ class layer:
         self.x = x
         self.output = self.x @ self.weights
         print(self.weights, end="\n\n")
-        print(self.output)
+        print(self.output, end="\n\n")
         assert self.output.shape == self.x.shape
         return self.output
 
@@ -38,20 +38,14 @@ class layer:
         return self.out_gradient
 
 
-"""
-torch api:
-# forward + backward + optimize
-outputs = net(inputs)
-loss = loss_function(outputs, labels)
-loss.backward()
-optimizer.step()
-"""
-
-
 class Model:
     """
-    allocate all the layers without inherent from class: layer
-    auto-diff with ease
+    torch api:
+    # forward + backward + optimize
+    outputs = net(inputs)
+    loss = loss_function(outputs, labels)
+    loss.backward()
+    optimizer.step()
     """
 
     def __init__(self):
@@ -66,7 +60,6 @@ class Model:
         for layer in self.model:
             x = layer(x)
         return x
-    """i tried to do torch but now it looks like tf"""
 
     def compile(self, optimizer, lossf):
         # assign functions instead of classes
@@ -162,9 +155,6 @@ grad -> dL2 -> dL1
 np.random.seed(1337)
 
 # init
-# size1 = (2, 2)
-# L1 = layer(size1)
-# L2 = layer(size1)
 l1 = layer_init(2, 2)
 l2 = layer_init(2, 2)
 L1 = layer(l1)
@@ -172,6 +162,15 @@ L2 = layer(l2)
 # forward pass
 x1 = np.random.randint(0, 10, size=(2, 1)).T
 y1 = np.random.randint(0, 10, size=(2, 1)).T
+# model
+model = Model()
+model([L1, L2])
+learning_rate = 1e-3
+optimizer = optim(learning_rate).SGD
+criterion = loss_fn.mse
+model.compile(optimizer, criterion)
+hist = model.fit(x1, y1)
+print(hist)
 # print("\nlayer1:\n")
 # print("input: ", x1, end="\n\n")
 # x = L1(x1)
@@ -190,11 +189,3 @@ y1 = np.random.randint(0, 10, size=(2, 1)).T
 # print("\nupdated\n")
 # optimizer = optim(L2.weights, dL2).SGD(1e-3)
 # optimizer = optim(L2.weights, dL2).Adam(1e-3)
-# model
-model = Model()
-model([L1])
-learning_rate = 1e-3
-optimizer = optim(learning_rate).SGD
-criterion = loss_fn.mse
-model.compile(optimizer, criterion)
-hist = model.fit(x1, y1)

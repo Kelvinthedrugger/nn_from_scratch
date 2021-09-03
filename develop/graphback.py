@@ -1,14 +1,12 @@
 """
 # useful: https://towardsdatascience.com/computational-graphs-in-pytorch-and-tensorflow-c25cc40bdcd1
-implement graph computation to achieve
-auto-differentiation
-from torch:
+auto-differentiation implemented using graph computation
+from torch tensor:
 Tensor:                     Function
  grad            input -->  forward --> output
                                V
 grad_fn     out_gradient <- backward <- in_gradient
 """
-from time import time
 import numpy as np
 from helper import layer_init
 
@@ -30,8 +28,11 @@ class layer:
         self.in_gradient = in_gradient
         # needs modification
         # self.out_gradient = self.x.T @ (self.in_gradient @ (self.weights.T))
-        self.out_gradient = self.x.T @ self.in_gradient
-        return self.out_gradient
+        # d_layer of the layer
+        self.d_weight = self.x.T @ self.in_gradient
+        # backprop grad to previous layer
+        self.out_gradient = self.in_gradient @ (self.weights.T)
+        return self.d_weight, self.out_gradient
 
 
 class Model:
@@ -70,15 +71,15 @@ class Model:
         for _ in range(epochs):
             # forward pass
             yhat = self.predict(x)
+            print("yhat: ", yhat, end="\n\n")
+            print("y: ", y, end="\n\n")
             # loss, gradient of loss
             self.loss, self.gradient = self.lossf(self, yhat, y)
-            # should be backprop here
+            # backprop
             for weight in self.model[::-1]:
-                d_weights = weight.backward(self.gradient)
-                # allocate the d_layer
-                self.d_weights.append(d_weights)
-                # propogate gradient through layer
-                self.gradient = self.gradient @ (weight.weights.T)
+                # d_layer, grad flow
+                d_weight, self.gradient = weight.backward(self.gradient)
+                self.d_weights.append(d_weight)
             # reverse back
             self.d_weights = self.d_weights[::-1]
             # weight update
@@ -133,72 +134,3 @@ class optim:
 
         self.weight -= self.learning_rate*self.gradient
         return self.weight
-
-
-class Learner:
-    """for better api, similar to model.compile() in tf"""
-    # or just create a complete class called 'Model'
-    # like tensorflow api
-
-    def __init__(self, model, lossf, optimizer):
-        """i don't care of using list but i guess i have to """
-        # figure out how to assemble the layers
-        # list.extend method could be useful
-        self.model = model
-        # loss function instead of the class
-        self.lossf = lossf
-        # function also
-        self.optimizer = optimizer
-
-    def __call__(self, x, y):
-        """forward-backward"""
-        yhat = self.model(x)
-        self.lossf(yhat, y)
-        self.optimizer()
-
-
-"""
-x -> L1 -> L2 -> yhat
-grad -> dL2 -> dL1
-"""
-# reproducibility
-np.random.seed(1337)
-
-# init
-l1 = layer_init(784, 128)
-l2 = layer_init(128, 10)
-L1 = layer(l1)
-L2 = layer(l2)
-# forward pass
-x1 = np.random.randint(0, 10, size=(784, 1)).T
-y1 = np.random.randint(0, 10, size=(10, 1)).T
-# model
-model = Model()
-model([L1, L2])
-learning_rate = 5e-6
-optimizer = optim(learning_rate).Adam
-criterion = loss_fn.mse
-model.compile(optimizer, criterion)
-start = time()
-hist = model.fit(x1, y1, epochs=2)
-end = time()
-print("\nloss: ", hist["loss"], "\n\naccuracy: ", hist["accuracy"])
-print("\ndue to small input size, overfitting occurs\n\nnow, it's slow: %.3fs" % (end-start))
-# print("\nlayer1:\n")
-# print("input: ", x1, end="\n\n")
-# x = L1(x1)
-# print("\nlayer2:\n")
-# x = L2(x)
-# # loss
-# MSE = loss_fn().mse
-# y = np.array([[3, 4, ]])
-# loss, gradient = MSE(x, y)
-# print("loss and grad: ", loss, gradient)
-# # backprops
-# print("\ndL2\n")
-# dL2 = L2.backward(gradient)
-# print("\ndL1\n")
-# dL1 = L1.backward(gradient)  # weight was not returned
-# print("\nupdated\n")
-# optimizer = optim(L2.weights, dL2).SGD(1e-3)
-# optimizer = optim(L2.weights, dL2).Adam(1e-3)

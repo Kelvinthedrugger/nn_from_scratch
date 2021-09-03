@@ -12,6 +12,6 @@
  update: auto-diff
 
       cd develop
-      python -m graphback
+      python -m graphtest
 
  Inspired by GeoHotz https://www.youtube.com/watch?v=JRlyw6LO5qo

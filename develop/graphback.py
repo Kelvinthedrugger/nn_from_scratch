@@ -19,20 +19,17 @@ class layer:
     def __call__(self, x):
         """input row vector is much easier
         and computationally inexpensive"""
-        #self.weights = layer_init(self.shape[0], self.shape[1])
         self.x = x
         self.output = self.x @ self.weights
         return self.output
 
     def backward(self, in_gradient):
         self.in_gradient = in_gradient
-        # needs modification
-        # self.out_gradient = self.x.T @ (self.in_gradient @ (self.weights.T))
         # d_layer of the layer
         self.d_weight = self.x.T @ self.in_gradient
         # backprop grad to previous layer
         self.out_gradient = self.in_gradient @ (self.weights.T)
-        return self.d_weight, self.out_gradient
+        # return self.d_weight, self.out_gradient
 
 
 class Model:
@@ -59,9 +56,6 @@ class Model:
         return x
 
     def compile(self, optimizer, lossf):
-        # assign functions instead of classes
-        # try to integrate weight inside optimizer directly
-        # without taking another argument
         self.optimizer = optimizer
         self.lossf = lossf
 
@@ -77,9 +71,9 @@ class Model:
             self.loss, self.gradient = self.lossf(self, yhat, y)
             # backprop
             for weight in self.model[::-1]:
-                # d_layer, grad flow
-                d_weight, self.gradient = weight.backward(self.gradient)
-                self.d_weights.append(d_weight)
+                weight.backward(self.gradient)
+                self.d_weights.append(weight.d_weight)
+                self.gradient = weight.out_gradient
             # reverse back
             self.d_weights = self.d_weights[::-1]
             # weight update

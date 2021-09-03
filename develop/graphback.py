@@ -8,6 +8,7 @@ Tensor:                     Function
                                V
 grad_fn     out_gradient <- backward <- in_gradient
 """
+from time import time
 import numpy as np
 from helper import layer_init
 
@@ -164,22 +165,25 @@ grad -> dL2 -> dL1
 np.random.seed(1337)
 
 # init
-l1 = layer_init(2, 3)
-l2 = layer_init(3, 2)
+l1 = layer_init(784, 128)
+l2 = layer_init(128, 10)
 L1 = layer(l1)
 L2 = layer(l2)
 # forward pass
-x1 = np.random.randint(0, 10, size=(2, 1)).T
-y1 = np.random.randint(0, 10, size=(2, 1)).T
+x1 = np.random.randint(0, 10, size=(784, 1)).T
+y1 = np.random.randint(0, 10, size=(10, 1)).T
 # model
 model = Model()
 model([L1, L2])
-learning_rate = 1e-5
+learning_rate = 5e-6
 optimizer = optim(learning_rate).Adam
 criterion = loss_fn.mse
 model.compile(optimizer, criterion)
-hist = model.fit(x1, y1, epochs=5)
-print("\n", hist["loss"], "\n\n", hist["accuracy"])
+start = time()
+hist = model.fit(x1, y1, epochs=2)
+end = time()
+print("\nloss: ", hist["loss"], "\n\naccuracy: ", hist["accuracy"])
+print("\ndue to small input size, overfitting occurs\n\nnow, it's slow: %.3fs" % (end-start))
 # print("\nlayer1:\n")
 # print("input: ", x1, end="\n\n")
 # x = L1(x1)

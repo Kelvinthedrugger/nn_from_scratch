@@ -69,10 +69,10 @@ class Model:
             print("y: ", y, end="\n\n")
             # loss, gradient of loss
             self.loss, self.gradient = self.lossf(self, yhat, y)
-            # gradient is the same which is weird
             print(self.gradient)
             # backprop
             for weight in self.model[::-1]:
+                print(weight.weights[0][:10])
                 weight.backward(self.gradient)
                 self.d_weights.append(weight.d_weight)
                 self.gradient = weight.out_gradient
@@ -80,8 +80,6 @@ class Model:
             self.d_weights = self.d_weights[::-1]
             # weight update
             for weight in self.model:
-                # weight.weights = self.optimizer(
-                #     weight.weights, self.d_weights[self.model.index(weight)])
                 self.optimizer(
                     weight.weights, self.d_weights[self.model.index(weight)])
             # record
@@ -99,7 +97,8 @@ class loss_fn:
     def mse(self, yhat, y):
         self.loss = np.square(np.subtract(yhat, y)).mean(axis=1)
         self.gradient = np.multiply(2, np.subtract(yhat, y))
-        return self.loss, self.gradient/(self.gradient.sum(axis=1))
+        # mean instead of normalise
+        return self.loss, self.gradient/(self.gradient.shape[-1])
 
 
 class optim:

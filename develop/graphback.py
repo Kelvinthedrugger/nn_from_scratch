@@ -115,10 +115,6 @@ class optim:
     def Adam(self, weight, gradient, alpha=1e-3, b1=0.9, b2=0.999, eps=1e-8):
         self.weight = weight
         self.gradient = gradient
-        alpha = alpha
-        b1 = b1
-        b2 = b2
-        eps = eps
         m = 0
         v = 0
         t = 0  # loop counter

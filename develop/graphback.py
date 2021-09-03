@@ -69,6 +69,8 @@ class Model:
             print("y: ", y, end="\n\n")
             # loss, gradient of loss
             self.loss, self.gradient = self.lossf(self, yhat, y)
+            # gradient is the same which is weird
+            print(self.gradient)
             # backprop
             for weight in self.model[::-1]:
                 weight.backward(self.gradient)
@@ -78,8 +80,11 @@ class Model:
             self.d_weights = self.d_weights[::-1]
             # weight update
             for weight in self.model:
-                weight.weights = self.optimizer(
+                # weight.weights = self.optimizer(
+                #     weight.weights, self.d_weights[self.model.index(weight)])
+                self.optimizer(
                     weight.weights, self.d_weights[self.model.index(weight)])
+            # record
             self.history["loss"].append(self.loss.mean())
             self.history["accuracy"].append(
                 (yhat == y).astype(np.float32).mean(axis=1))
@@ -106,7 +111,7 @@ class optim:
         self.weight = weight
         self.gradient = gradient
         self.weight -= self.learning_rate * self.gradient
-        return self.weight
+        # return self.weight
 
     def Adam(self, weight, gradient, alpha=1e-3, b1=0.9, b2=0.999, eps=1e-8):
         self.weight = weight
@@ -127,4 +132,4 @@ class optim:
             self.gradient -= alpha*mhat/(vhat**0.5+eps)
 
         self.weight -= self.learning_rate*self.gradient
-        return self.weight
+        # return self.weight

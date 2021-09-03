@@ -18,12 +18,12 @@ y1 = np.random.randint(0, 10, size=(10, 1)).T
 # model
 model = Model()
 model([L1, L2])
-learning_rate = 5e-6
+learning_rate = 1e-4
 optimizer = optim(learning_rate).Adam
 criterion = loss_fn.mse
 model.compile(optimizer, criterion)
 start = time()
-hist = model.fit(x1, y1, epochs=2)
+hist = model.fit(x1, y1, epochs=5)
 end = time()
 print("\nloss: ", hist["loss"], "\n\naccuracy: ", hist["accuracy"])
 print("\ndue to small input size, overfitting occurs\n\nnow, it's slow: %.3fs" % (end-start))

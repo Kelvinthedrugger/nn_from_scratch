@@ -111,8 +111,9 @@ class Model:
             # record
             self.history["loss"].append(self.loss.mean())
             # should add argmax() for classification problem
-            self.history["accuracy"].append(
-                (yhat == y).astype(np.float32).mean(axis=1))
+            # self.history["accuracy"].append(
+            #     (yhat == y).astype(np.float32).mean(axis=1))
+            self.history["accuracy"].append(int(yhat == y))
 
         return self.history
 
@@ -126,6 +127,18 @@ class loss_fn:
         self.gradient = np.multiply(2, np.subtract(yhat, y))
         # mean instead of normalise
         return self.loss, self.gradient/(self.gradient.shape[-1])
+
+    def ce(self, yhat, y, num_class=10):
+        # Crossentropy loss (categorical)
+        # encoding label
+        label = np.zeros((len(y), num_class), dtype=np.float32)
+        label[range(label.shape[0]), y] = 1
+        los = (-yhat + np.log(np.exp(yhat).sum(axis=1)).reshape((-1, 1)))
+        self.loss = (label*los).mean(axis=1)
+        d_out = label/len(y)
+        self.gradient = -d_out + \
+            np.exp(-los)*d_out.sum(axis=1).reshape((-1, 1))
+        return self.loss, self.gradient
 
 
 class optim:

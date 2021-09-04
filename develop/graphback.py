@@ -38,6 +38,9 @@ class activation:
     activation = ReLU()
     model = Model()
     model([Dense, activation, ...])
+
+    note: 
+    activation doesn't have weights, so no update for it either
     """
 
     def __init__(self, weight):

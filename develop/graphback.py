@@ -32,6 +32,46 @@ class layer:
         # return self.d_weight, self.out_gradient
 
 
+class activation:
+    """
+    e.g.
+    activation = ReLU()
+    model = Model()
+    model([Dense, activation, ...])
+    """
+
+    def __init__(self, weight):
+        self.weight = weight
+
+    def ReLU(self, x):
+        # forward pass from last layer
+        self.x = x
+        # foward x to next layer
+        self.output = np.maximum(x, 0)
+        # implement gradient form
+        self.grad = (self.output > 0).astype(np.float32)
+        # return self.output, self.grad
+
+    # ... add more activation function here
+
+    # def backward(self):
+    #     """
+    #     allocates tensor from the called activation function!
+    #     """
+    #     pass
+
+
+# np.random.seed(1337)
+# x1 = np.random.uniform(-1., 1., size=(10,))
+# l1 = layer_init(10, 5)
+# y1 = x1 @ l1
+# print("output: ", y1, end="\n\n")
+# act1 = activation(l1)
+# y11, dy11 = act1.ReLU(y1)
+# print("after relu: ", y11, end="\n\n")
+# print("gradient: ", dy11)
+
+
 class Model:
     """
     torch api:

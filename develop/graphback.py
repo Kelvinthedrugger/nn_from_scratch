@@ -43,25 +43,37 @@ class activation:
     activation doesn't have weights, so no update for it either
     """
 
-    def __init__(self, weight):
-        self.weight = weight
+    def __init__(self, weights):
+        self.weights = weights
 
-    def ReLU(self, x):
+    # it's ReLu
+    def __call__(self, x):
         # forward pass from last layer
         self.x = x
         # foward x to next layer
-        self.output = np.maximum(x, 0)
-        # implement gradient form
-        self.grad = (self.output > 0).astype(np.float32)
+        self.output = np.maximum(self.x, 0)
+        #self.output = self.x
+        return self.output
         # return self.output, self.grad
 
     # ... add more activation function here
 
-    # def backward(self):
-    #     """
-    #     allocates tensor from the called activation function!
-    #     """
-    #     pass
+    def backward(self, in_gradient):
+        """
+        allocates tensor from the called activation function!
+        """
+        self.in_gradient = in_gradient
+        # d_layer of the layer: it's activation!
+        self.d_weight = 0
+        # backprop grad to previous layer
+        # implement gradient form
+        """
+        backward not done
+        layer 2 did not updated
+        """
+        self.weights = (self.output > 0).astype(np.float32)
+        # print("\nrelu: ", self.weights, end="\n\n")
+        self.out_gradient = np.multiply(self.in_gradient, self.weights)
 
 
 # np.random.seed(1337)
@@ -115,6 +127,7 @@ class Model:
             print(self.gradient)
             # backprop
             for weight in self.model[::-1]:
+                print("\nweight", self.model.index(weight), end=" \n")
                 print(weight.weights[0][:10])
                 weight.backward(self.gradient)
                 self.d_weights.append(weight.d_weight)

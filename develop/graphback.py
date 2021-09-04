@@ -29,7 +29,6 @@ class layer:
         self.d_weight = self.x.T @ self.in_gradient
         # backprop grad to previous layer
         self.out_gradient = self.in_gradient @ (self.weights.T)
-        # return self.d_weight, self.out_gradient
 
 
 class activation:
@@ -44,18 +43,15 @@ class activation:
     """
 
     def __init__(self, weights):
-        self.weights = weights
+        self.weights = 0  # useless in activation function
 
     # it's ReLu
     def __call__(self, x):
         # forward pass from last layer
         self.x = x
         # foward x to next layer
-        """extremely weird"""
-        # self.output = np.maximum(self.x, 0)
-        self.output = self.x
+        self.output = np.maximum(self.x, 0)
         return self.output
-        # return self.output, self.grad
 
     # ... add more activation function here
 
@@ -68,24 +64,8 @@ class activation:
         self.d_weight = 0
         # backprop grad to previous layer
         # implement gradient form
-        """
-        backward not done
-        layer 2 did not updated
-        """
         self.weights = (self.output > 0).astype(np.float32)
-        # print("\nrelu: ", self.weights, end="\n\n")
         self.out_gradient = np.multiply(self.in_gradient, self.weights)
-
-
-# np.random.seed(1337)
-# x1 = np.random.uniform(-1., 1., size=(10,))
-# l1 = layer_init(10, 5)
-# y1 = x1 @ l1
-# print("output: ", y1, end="\n\n")
-# act1 = activation(l1)
-# y11, dy11 = act1.ReLU(y1)
-# print("after relu: ", y11, end="\n\n")
-# print("gradient: ", dy11)
 
 
 class Model:
@@ -115,21 +95,16 @@ class Model:
         self.optimizer = optimizer
         self.lossf = lossf
 
-    def fit(self, x, y, epochs=5):
+    def fit(self, x, y, epochs=3):
         self.history = {"loss": [], "accuracy": []}
         self.d_weights = []
         for _ in range(epochs):
             # forward pass
             yhat = self.predict(x)
-            print("yhat: ", yhat, end="\n\n")
-            # print("y: ", y, end="\n\n")
             # loss, gradient of loss
             self.loss, self.gradient = self.lossf(self, yhat, y)
-            # print(self.gradient)
             # backprop
             for weight in self.model[::-1]:
-                print("\nweight", self.model.index(weight), end=" \n")
-                print(weight.weights[0][:10])
                 weight.backward(self.gradient)
                 self.d_weights.append(weight.d_weight)
                 self.gradient = weight.out_gradient
@@ -160,14 +135,13 @@ class loss_fn:
 
 class optim:
 
-    def __init__(self, learning_rate):
+    def __init__(self, learning_rate=1e-3):
         self.learning_rate = learning_rate
 
     def SGD(self, weight, gradient):
         self.weight = weight
         self.gradient = gradient
         self.weight -= self.learning_rate * self.gradient
-        # return self.weight
 
     def Adam(self, weight, gradient, alpha=1e-3, b1=0.9, b2=0.999, eps=1e-8):
         self.weight = weight
@@ -184,4 +158,3 @@ class optim:
             self.gradient -= alpha*mhat/(vhat**0.5+eps)
 
         self.weight -= self.learning_rate*self.gradient
-        # return self.weight

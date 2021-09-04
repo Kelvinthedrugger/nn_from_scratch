@@ -18,9 +18,9 @@ x1 = np.random.randint(0, 10, size=(784, 1)).T
 y1 = np.random.randint(0, 10, size=(10, 1)).T
 # model
 model = Model()
-#model([L1, L2])
+# model([L1, L2])
 model([L1, ReLu, L2])
-learning_rate = 1e-2
+learning_rate = 1e-3
 optimizer = optim(learning_rate).Adam
 criterion = loss_fn.mse
 model.compile(optimizer, criterion)

@@ -33,17 +33,12 @@ class layer:
 
 class activation:
     """
-    e.g.
-    activation = ReLU()
-    model = Model()
-    model([Dense, activation, ...])
-
     note: 
     activation doesn't have weights, so no update for it either
     """
 
-    def __init__(self, weights):
-        self.weights = 0  # useless in activation function
+    def __init__(self, weights=None):
+        self.weights = weights  # useless in activation function
 
     # it's ReLu
     def __call__(self, x):
@@ -63,9 +58,8 @@ class activation:
         # d_layer of the layer: it's activation!
         self.d_weight = 0
         # backprop grad to previous layer
-        # implement gradient form
-        self.weights = (self.output > 0).astype(np.float32)
-        self.out_gradient = np.multiply(self.in_gradient, self.weights)
+        self.out_gradient = np.multiply(
+            self.in_gradient, (self.output > 0).astype(np.float32))
 
 
 class Model:
@@ -116,6 +110,7 @@ class Model:
                     weight.weights, self.d_weights[self.model.index(weight)])
             # record
             self.history["loss"].append(self.loss.mean())
+            # should add argmax() for classification problem
             self.history["accuracy"].append(
                 (yhat == y).astype(np.float32).mean(axis=1))
 

@@ -110,10 +110,8 @@ class Model:
                     weight.weights, self.d_weights[self.model.index(weight)])
             # record
             self.history["loss"].append(self.loss.mean())
-            # should add argmax() for classification problem
-            # self.history["accuracy"].append(
-            #     (yhat == y).astype(np.float32).mean(axis=1))
-            self.history["accuracy"].append(int(yhat == y))
+            self.history["accuracy"].append(
+                (yhat.argmax(axis=1) == y).astype(np.float32).mean())
 
         return self.history
 

@@ -51,8 +51,9 @@ class activation:
         # forward pass from last layer
         self.x = x
         # foward x to next layer
-        self.output = np.maximum(self.x, 0)
-        #self.output = self.x
+        """extremely weird"""
+        # self.output = np.maximum(self.x, 0)
+        self.output = self.x
         return self.output
         # return self.output, self.grad
 
@@ -114,17 +115,17 @@ class Model:
         self.optimizer = optimizer
         self.lossf = lossf
 
-    def fit(self, x, y, epochs=2):
+    def fit(self, x, y, epochs=5):
         self.history = {"loss": [], "accuracy": []}
         self.d_weights = []
         for _ in range(epochs):
             # forward pass
             yhat = self.predict(x)
             print("yhat: ", yhat, end="\n\n")
-            print("y: ", y, end="\n\n")
+            # print("y: ", y, end="\n\n")
             # loss, gradient of loss
             self.loss, self.gradient = self.lossf(self, yhat, y)
-            print(self.gradient)
+            # print(self.gradient)
             # backprop
             for weight in self.model[::-1]:
                 print("\nweight", self.model.index(weight), end=" \n")

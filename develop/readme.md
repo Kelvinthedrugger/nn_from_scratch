@@ -4,7 +4,7 @@
 
  add monitor of training also, might be a good practice to wrap up .py into .exe
 
- custom forward pass, starts from CNN
+ custom forward pass, starts from CNN(50%)
 
 
  for efficiency:
@@ -28,7 +28,7 @@
   
    To compute d_layer ith: will involve f(i-1).T, diff_act(i-1), layer i+1 ,and gradient
 
-   super hard: 
+   super hard(80% done): 
 
     modularize all the stuff to deploy auto differentiation without hand-coded 
 

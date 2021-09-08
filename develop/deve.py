@@ -18,7 +18,7 @@ def BobNet(x, layers=None, input_shape=None, act=act_df):
     l1 = layer_init(784, 128)
     l2 = layer_init(128, 10)
     """when classmethod: figure how to pass weights automatically"""
-    return [x, x@l1, act(x@l1), x@l1@l2], [l1, l2]
+    return [x, x@l1, act(x@l1), act(x@l1)@l2], [l1, l2]
 
 
 def backward(grad, weights, fpass):

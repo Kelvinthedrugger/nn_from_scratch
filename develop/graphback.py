@@ -20,15 +20,17 @@ class layer:
         """input row vector is much easier
         and computationally inexpensive"""
         self.x = x
-        self.output = self.x @ self.weights
-        return self.output
+        return x @ self.weights
 
     def backward(self, in_gradient):
-        self.in_gradient = in_gradient
-        # d_layer of the layer
-        self.d_weight = self.x.T @ self.in_gradient
+        self.d_weight = self.x.T @ in_gradient
         # backprop grad to previous layer
-        self.out_gradient = self.in_gradient @ (self.weights.T)
+        self.out_gradient = in_gradient @ (self.weights.T)
+        # self.in_gradient = in_gradient
+        # # d_layer of the layer
+        # self.d_weight = self.x.T @ self.in_gradient
+        # # backprop grad to previous layer
+        # self.out_gradient = self.in_gradient @ (self.weights.T)
 
 
 class activation:
@@ -45,6 +47,7 @@ class activation:
         # forward pass from last layer
         self.x = x
         # foward x to next layer
+        # return np.maximum(self.x, 0)
         self.output = np.maximum(self.x, 0)
         return self.output
 
@@ -54,12 +57,12 @@ class activation:
         """
         allocates tensor from the called activation function!
         """
-        self.in_gradient = in_gradient
+        #self.in_gradient = in_gradient
         # d_layer of the layer: it's activation!
         self.d_weight = 0
         # backprop grad to previous layer
         self.out_gradient = np.multiply(
-            self.in_gradient, (self.output > 0).astype(np.float32))
+            in_gradient, (self.output > 0).astype(np.float32))
 
 
 class Model:
@@ -90,30 +93,48 @@ class Model:
         self.lossf = lossf
 
     def fit(self, x, y, epochs=3):
-        self.history = {"loss": [], "accuracy": []}
-        self.d_weights = []
+        history = {"loss": [], "accuracy": []}
+        d_weights = []
         for _ in range(epochs):
             # forward pass
             yhat = self.predict(x)
             # loss, gradient of loss
-            self.loss, self.gradient = self.lossf(self, yhat, y)
+            loss, gradient = self.lossf(self, yhat, y)
             # backprop
             for weight in self.model[::-1]:
-                weight.backward(self.gradient)
-                self.d_weights.append(weight.d_weight)
-                self.gradient = weight.out_gradient
-            # reverse back
-            self.d_weights = self.d_weights[::-1]
+                weight.backward(gradient)
+                d_weights.insert(0, weight.d_weight)
+                gradient = weight.out_gradient
             # weight update
             for weight in self.model:
                 self.optimizer(
-                    weight.weights, self.d_weights[self.model.index(weight)])
+                    weight.weights, d_weights[self.model.index(weight)])
             # record
-            self.history["loss"].append(self.loss.mean())
-            self.history["accuracy"].append(
+            history["loss"].append(loss.mean())
+            history["accuracy"].append(
                 (yhat.argmax(axis=1) == y).astype(np.float32).mean())
+        # for _ in range(epochs):
+        #     # forward pass
+        #     yhat = self.predict(x)
+        #     # loss, gradient of loss
+        #     self.loss, self.gradient = self.lossf(self, yhat, y)
+        #     # backprop
+        #     for weight in self.model[::-1]:
+        #         weight.backward(self.gradient)
+        #         self.d_weights.append(weight.d_weight)
+        #         self.gradient = weight.out_gradient
+        #     # reverse back
+        #     self.d_weights = self.d_weights[::-1]
+        #     # weight update
+        #     for weight in self.model:
+        #         self.optimizer(
+        #             weight.weights, self.d_weights[self.model.index(weight)])
+        #     # record
+        #     self.history["loss"].append(self.loss.mean())
+        #     self.history["accuracy"].append(
+        #         (yhat.argmax(axis=1) == y).astype(np.float32).mean())
 
-        return self.history
+        return history
 
 
 class loss_fn:
@@ -132,10 +153,12 @@ class loss_fn:
         label = np.zeros((len(y), num_class), dtype=np.float32)
         label[range(label.shape[0]), y] = 1
         los = (-yhat + np.log(np.exp(yhat).sum(axis=1)).reshape((-1, 1)))
-        self.loss = (label*los).mean(axis=1)
+        #self.loss = (label*los).mean(axis=1)
+        loss = (label*los).mean(axis=1)
         d_out = label/len(y)
-        self.gradient = -d_out + \
-            np.exp(-los)*d_out.sum(axis=1).reshape((-1, 1))
+        #self.gradient = -d_out + np.exp(-los)*d_out.sum(axis=1).reshape((-1, 1))
+        gradient = -d_out + np.exp(-los)*d_out.sum(axis=1).reshape((-1, 1))
+        return loss, gradient
         return self.loss, self.gradient
 
 

@@ -15,3 +15,6 @@
       python -m graphtest
 
  Inspired by GeoHotz https://www.youtube.com/watch?v=JRlyw6LO5qo
+
+ edit: for cleaner version, checkout: https://github.com/Kelvinthedrugger/NN_clean
+ 
